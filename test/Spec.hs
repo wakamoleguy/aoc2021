@@ -23,5 +23,30 @@ main = hspec $ do
       expected <- countDepthWindowIncreases <$> readInput "inputs/day1.txt"
       expected `shouldBe` 1150
 
+  describe "Day 2" $ do
+    it "solves a simple Day 2A example" $ do
+      let input =
+            [ ("forward", 5),
+              ("down", 5),
+              ("forward", 8),
+              ("up", 3),
+              ("down", 8),
+              ("forward", 2)
+            ]
+      uncurry (*) (calculateCoordinates input) `shouldBe` 150
+
+    it "solves Day2A" $ do
+      expected <- calculateCoordinates . mapMaybe readCommand <$> readLines "inputs/day2.txt"
+      uncurry (*) expected `shouldBe` 1804520
+
+readLines :: FilePath -> IO [String]
+readLines path = lines <$> readFile path
+
 readInput :: FilePath -> IO [Int]
-readInput fp = mapMaybe readMaybe . lines <$> readFile fp
+readInput fp = mapMaybe readMaybe <$> readLines fp
+
+readCommand :: String -> Maybe (String, Int)
+readCommand s = do
+  case words s of
+    [c, n] -> (,) c <$> readMaybe n
+    _ -> Nothing
