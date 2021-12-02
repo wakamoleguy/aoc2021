@@ -6,7 +6,7 @@ module Lib
   )
 where
 
-import Data.Semigroup
+import Data.List
 
 pairs :: [a] -> [(a, a)]
 pairs = zip <*> tail
@@ -42,11 +42,11 @@ calculateSimpleCoordinates = foldr applySimpleSubmarineCommand (0, 0)
 
 -- Actual submarines need aim, not just moving up and down
 
-applySubmarineCommand :: (String, Int) -> (Int, Int, Int) -> (Int, Int, Int)
-applySubmarineCommand ("forward", n) (x, y, a) = (x + n, y + (a * n), a)
-applySubmarineCommand ("down", n) (x, y, a) = (x, y, a + n)
-applySubmarineCommand ("up", n) (x, y, a) = (x, y, a - n)
-applySubmarineCommand _ coords = coords
+applySubmarineCommand :: (Int, Int, Int) -> (String, Int) -> (Int, Int, Int)
+applySubmarineCommand (x, y, a) ("forward", n) = (x + n, y + (a * n), a)
+applySubmarineCommand (x, y, a) ("down", n) = (x, y, a + n)
+applySubmarineCommand (x, y, a) ("up", n) = (x, y, a - n)
+applySubmarineCommand coords _ = coords
 
 calculateCoordinates :: [(String, Int)] -> (Int, Int, Int)
-calculateCoordinates = foldl (flip applySubmarineCommand) (0, 0, 0)
+calculateCoordinates = foldl' applySubmarineCommand (0, 0, 0)
