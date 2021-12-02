@@ -24,6 +24,8 @@ main = hspec $ do
       expected `shouldBe` 1150
 
   describe "Day 2" $ do
+    let checkSumA = uncurry (*)
+
     it "solves a simple Day 2A example" $ do
       let input =
             [ ("forward", 5),
@@ -33,11 +35,30 @@ main = hspec $ do
               ("down", 8),
               ("forward", 2)
             ]
-      uncurry (*) (calculateCoordinates input) `shouldBe` 150
+      checkSumA (calculateSimpleCoordinates input) `shouldBe` 150
 
     it "solves Day2A" $ do
+      expected <- calculateSimpleCoordinates . mapMaybe readCommand <$> readLines "inputs/day2.txt"
+      checkSumA expected `shouldBe` 1804520
+
+    let checkSumB (x, y, _) = x * y
+
+    it "solves a simple Day 2B example" $ do
+      let input =
+            [ ("forward", 5),
+              ("down", 5),
+              ("forward", 8),
+              ("up", 3),
+              ("down", 8),
+              ("forward", 2)
+            ]
+      calculateCoordinates input `shouldBe` (15, 60, 10)
+      checkSumB (calculateCoordinates input) `shouldBe` 900
+
+    it "solves Day2B" $ do
       expected <- calculateCoordinates . mapMaybe readCommand <$> readLines "inputs/day2.txt"
-      uncurry (*) expected `shouldBe` 1804520
+      expected `shouldBe` (1970, 1000556, 916)
+      checkSumB expected `shouldBe` 1971095320
 
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path

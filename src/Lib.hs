@@ -1,6 +1,7 @@
 module Lib
   ( countDepthIncreases,
     countDepthWindowIncreases,
+    calculateSimpleCoordinates,
     calculateCoordinates,
   )
 where
@@ -16,7 +17,9 @@ pairsByThree = zip <*> tail . tail . tail
 triples :: [a] -> [(a, a, a)]
 triples = zip3 <*> tail <*> tail . tail
 
+--------------------------------------------------------------------------------
 -- Day 1 - Sonar Sweep
+--------------------------------------------------------------------------------
 
 countDepthIncreases :: [Int] -> Int
 countDepthIncreases = length . filter (uncurry (<)) . (zip <*> tail)
@@ -24,13 +27,26 @@ countDepthIncreases = length . filter (uncurry (<)) . (zip <*> tail)
 countDepthWindowIncreases :: [Int] -> Int
 countDepthWindowIncreases = length . filter (uncurry (<)) . (zip <*> drop 3)
 
+--------------------------------------------------------------------------------
 -- Day 2 - Dive!
+--------------------------------------------------------------------------------
 
-applySubmarineCommand :: (String, Int) -> (Int, Int) -> (Int, Int)
-applySubmarineCommand ("forward", n) (x, y) = (x + n, y)
-applySubmarineCommand ("down", n) (x, y) = (x, y + n)
-applySubmarineCommand ("up", n) (x, y) = (x, y - n)
-applySubmarineCommand _ coord = coord
+applySimpleSubmarineCommand :: (String, Int) -> (Int, Int) -> (Int, Int)
+applySimpleSubmarineCommand ("forward", n) (x, y) = (x + n, y)
+applySimpleSubmarineCommand ("down", n) (x, y) = (x, y + n)
+applySimpleSubmarineCommand ("up", n) (x, y) = (x, y - n)
+applySimpleSubmarineCommand _ coord = coord
 
-calculateCoordinates :: [(String, Int)] -> (Int, Int)
-calculateCoordinates = foldr applySubmarineCommand (0, 0)
+calculateSimpleCoordinates :: [(String, Int)] -> (Int, Int)
+calculateSimpleCoordinates = foldr applySimpleSubmarineCommand (0, 0)
+
+-- Actual submarines need aim, not just moving up and down
+
+applySubmarineCommand :: (String, Int) -> (Int, Int, Int) -> (Int, Int, Int)
+applySubmarineCommand ("forward", n) (x, y, a) = (x + n, y + (a * n), a)
+applySubmarineCommand ("down", n) (x, y, a) = (x, y, a + n)
+applySubmarineCommand ("up", n) (x, y, a) = (x, y, a - n)
+applySubmarineCommand _ coords = coords
+
+calculateCoordinates :: [(String, Int)] -> (Int, Int, Int)
+calculateCoordinates = foldl (flip applySubmarineCommand) (0, 0, 0)
