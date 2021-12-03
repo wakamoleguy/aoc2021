@@ -81,13 +81,11 @@ powerConsumption bs = binaryToDecimal gammaRates * binaryToDecimal etaRates
 
 -- Part 2
 calculateFilterCode :: ([Int] -> Int) -> [[Int]] -> [Int]
+calculateFilterCode _ [b] = b
 calculateFilterCode targeter bs =
-  let firstBits = map head bs
-      targetBit = targeter firstBits
-      validCodes = filter (\b -> head b == targetBit) bs
-   in case validCodes of
-        [x] -> x
-        xs -> targetBit : calculateFilterCode targeter (map tail xs)
+  let targetBit = targeter $ map head bs
+      validCodes = filter ((targetBit ==) . head) bs
+   in targetBit : calculateFilterCode targeter (map tail validCodes)
 
 oxygenConsumption :: [String] -> Int
 oxygenConsumption = binaryToDecimal . calculateFilterCode mostCommonBit . map parseBinary

@@ -92,10 +92,7 @@ main = hspec $ do
 
     it "solves Day3B" $ do
       input <- readLines "inputs/day3.txt"
-      startTime <- getCurrentTime
       oxygenConsumption input * c02Consumption input `shouldBe` 2845944
-      endTime <- getCurrentTime
-      print (realToFrac (diffUTCTime endTime startTime) :: Double)
 
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path
