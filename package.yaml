@@ -47,3 +47,4 @@ tests:
     dependencies:
     - advent2021
     - hspec
+    - time

@@ -1,6 +1,7 @@
 import Control.Monad
 import Data.List
 import Data.Maybe
+import Data.Time
 import Lib
 import Test.Hspec
 import Text.Printf (PrintfArg (parseFormat))
@@ -63,26 +64,38 @@ main = hspec $ do
       checkSumB expected `shouldBe` 1971095320
 
   describe "Day 3" $ do
+    let example =
+          [ "00100",
+            "11110",
+            "10110",
+            "10111",
+            "10101",
+            "01111",
+            "00111",
+            "11100",
+            "10000",
+            "11001",
+            "00010",
+            "01010"
+          ]
     it "solves a simple Day 3A example" $ do
-      let input =
-            [ "00100",
-              "11110",
-              "10110",
-              "10111",
-              "10101",
-              "01111",
-              "00111",
-              "11100",
-              "10000",
-              "11001",
-              "00010",
-              "01010"
-            ]
-      powerConsumption input `shouldBe` 198
+      powerConsumption example `shouldBe` 198
 
     it "solves Day3A" $ do
       input <- readLines "inputs/day3.txt"
       powerConsumption input `shouldBe` 2648450
+
+    it "calculates oxygen consumption for the example" $ do
+      oxygenConsumption example `shouldBe` 23
+    it "calculate C02 consumption for the example" $ do
+      c02Consumption example `shouldBe` 10
+
+    it "solves Day3B" $ do
+      input <- readLines "inputs/day3.txt"
+      startTime <- getCurrentTime
+      oxygenConsumption input * c02Consumption input `shouldBe` 2845944
+      endTime <- getCurrentTime
+      print (realToFrac (diffUTCTime endTime startTime) :: Double)
 
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path

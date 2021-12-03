@@ -5,8 +5,8 @@ module Lib
     calculateCoordinates,
     powerConsumption,
     parseBinary,
-    singleGammaDigit,
-    binaryToDecimal,
+    oxygenConsumption,
+    c02Consumption,
   )
 where
 
@@ -62,10 +62,13 @@ calculateCoordinates = foldl' applySubmarineCommand (0, 0, 0)
 parseBinary :: String -> [Int]
 parseBinary = map (read . (: []))
 
-singleGammaDigit :: [Int] -> Int
-singleGammaDigit = sumToDigit . foldl' (\x y -> x + 2 * y - 1) 0
+mostCommonBit :: [Int] -> Int
+mostCommonBit = sumToDigit . foldl' (\x y -> x + 2 * y - 1) 0
   where
-    sumToDigit s = if s > 0 then 1 else 0
+    sumToDigit s = if s >= 0 then 1 else 0
+
+leastCommonBit :: [Int] -> Int
+leastCommonBit = (1 -) . mostCommonBit
 
 binaryToDecimal :: [Int] -> Int
 binaryToDecimal = foldl' (\x y -> x * 2 + y) 0
@@ -73,5 +76,21 @@ binaryToDecimal = foldl' (\x y -> x * 2 + y) 0
 powerConsumption :: [String] -> Int
 powerConsumption bs = binaryToDecimal gammaRates * binaryToDecimal etaRates
   where
-    gammaRates = map singleGammaDigit $ transpose $ map parseBinary bs
+    gammaRates = map mostCommonBit $ transpose $ map parseBinary bs
     etaRates = map (1 -) gammaRates
+
+-- Part 2
+calculateFilterCode :: ([Int] -> Int) -> [[Int]] -> [Int]
+calculateFilterCode targeter bs =
+  let firstBits = map head bs
+      targetBit = targeter firstBits
+      validCodes = filter (\b -> head b == targetBit) bs
+   in case validCodes of
+        [x] -> x
+        xs -> targetBit : calculateFilterCode targeter (map tail xs)
+
+oxygenConsumption :: [String] -> Int
+oxygenConsumption = binaryToDecimal . calculateFilterCode mostCommonBit . map parseBinary
+
+c02Consumption :: [String] -> Int
+c02Consumption = binaryToDecimal . calculateFilterCode leastCommonBit . map parseBinary
