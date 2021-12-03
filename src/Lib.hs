@@ -3,6 +3,10 @@ module Lib
     countDepthWindowIncreases,
     calculateSimpleCoordinates,
     calculateCoordinates,
+    powerConsumption,
+    parseBinary,
+    singleGammaDigit,
+    binaryToDecimal,
   )
 where
 
@@ -50,3 +54,24 @@ applySubmarineCommand coords _ = coords
 
 calculateCoordinates :: [(String, Int)] -> (Int, Int, Int)
 calculateCoordinates = foldl' applySubmarineCommand (0, 0, 0)
+
+--------------------------------------------------------------------------------
+-- Day 2 - Binary Diagnostic
+--------------------------------------------------------------------------------
+
+parseBinary :: String -> [Int]
+parseBinary = map (read . (: []))
+
+singleGammaDigit :: [Int] -> Int
+singleGammaDigit = sumToDigit . foldl' (\x y -> x + 2 * y - 1) 0
+  where
+    sumToDigit s = if s > 0 then 1 else 0
+
+binaryToDecimal :: [Int] -> Int
+binaryToDecimal = foldl' (\x y -> x * 2 + y) 0
+
+powerConsumption :: [String] -> Int
+powerConsumption bs = binaryToDecimal gammaRates * binaryToDecimal etaRates
+  where
+    gammaRates = map singleGammaDigit $ transpose $ map parseBinary bs
+    etaRates = map (1 -) gammaRates

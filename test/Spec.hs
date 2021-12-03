@@ -1,7 +1,9 @@
 import Control.Monad
+import Data.List
 import Data.Maybe
 import Lib
 import Test.Hspec
+import Text.Printf (PrintfArg (parseFormat))
 import Text.Read (readMaybe)
 
 main :: IO ()
@@ -59,6 +61,28 @@ main = hspec $ do
       expected <- calculateCoordinates . mapMaybe readCommand <$> readLines "inputs/day2.txt"
       expected `shouldBe` (1970, 1000556, 916)
       checkSumB expected `shouldBe` 1971095320
+
+  describe "Day 3" $ do
+    it "solves a simple Day 3A example" $ do
+      let input =
+            [ "00100",
+              "11110",
+              "10110",
+              "10111",
+              "10101",
+              "01111",
+              "00111",
+              "11100",
+              "10000",
+              "11001",
+              "00010",
+              "01010"
+            ]
+      powerConsumption input `shouldBe` 198
+
+    it "solves Day3A" $ do
+      input <- readLines "inputs/day3.txt"
+      powerConsumption input `shouldBe` 2648450
 
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path
