@@ -100,7 +100,14 @@ main = hspec $ do
       example <- readLines "inputs/day4-example.txt"
       let bingoCall = readCommaSeparatedInts $ head example
       let bingoBoards = readBingoBoards $ map readWhitespaceSeparatedInts $ tail example
-      bingoBoards `shouldBe` []
+      playBingo bingoCall bingoBoards `shouldBe` 4512
+
+    it "solves Day 4A" $ do
+      example <- readLines "inputs/day4.txt"
+      let bingoCall = readCommaSeparatedInts $ head example
+      let bingoBoards = readBingoBoards $ map readWhitespaceSeparatedInts $ tail example
+      playBingo bingoCall bingoBoards `shouldBe` 8136
+
 
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path

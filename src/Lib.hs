@@ -7,6 +7,7 @@ module Lib
     parseBinary,
     oxygenConsumption,
     c02Consumption,
+    playBingo,
   )
 where
 
@@ -56,7 +57,7 @@ calculateCoordinates :: [(String, Int)] -> (Int, Int, Int)
 calculateCoordinates = foldl' applySubmarineCommand (0, 0, 0)
 
 --------------------------------------------------------------------------------
--- Day 2 - Binary Diagnostic
+-- Day 3 - Binary Diagnostic
 --------------------------------------------------------------------------------
 
 parseBinary :: String -> [Int]
@@ -95,3 +96,37 @@ oxygenConsumption = calculateFilterCode mostCommonBit
 
 c02Consumption :: [String] -> Int
 c02Consumption = calculateFilterCode leastCommonBit
+
+
+--------------------------------------------------------------------------------
+-- Day 4 - Giant Squid
+--------------------------------------------------------------------------------
+
+-- ...wants to play bingo?
+
+-- We store the transposed board for convenience
+type BingoBoard = ([[Int]], [[Int]])
+
+playBingo :: [Int] -> [BingoBoard] -> Int
+playBingo [] _ = 0
+playBingo (n:ns) bs =
+  let stampedBoards = map (stamp n) bs
+      winningBoard = find isWinner stampedBoards
+  in case winningBoard of
+    Just b -> n * score b
+    Nothing -> playBingo ns stampedBoards
+
+stamp :: Int -> BingoBoard -> BingoBoard
+stamp n (rs, cs) = (map f rs, map f cs)
+  where
+    f :: [Int] -> [Int]
+    f = filter (n /=)
+
+isWinner :: BingoBoard -> Bool
+isWinner ([]:rs, cs) = True
+isWinner (rs, []:cs) = True
+isWinner ([], []) = False
+isWinner (r:rs, c:cs) = isWinner (rs, cs)
+
+score :: BingoBoard -> Int
+score = sum . map sum . fst
