@@ -1,5 +1,6 @@
 import Control.Monad
 import Data.List
+import Data.List.Split
 import Data.Maybe
 import Data.Time
 import Lib
@@ -94,6 +95,13 @@ main = hspec $ do
       input <- readLines "inputs/day3.txt"
       oxygenConsumption input * c02Consumption input `shouldBe` 2845944
 
+  describe "Day 4" $ do
+    it "solves a simple Day 4A example" $ do
+      example <- readLines "inputs/day4-example.txt"
+      let bingoCall = readCommaSeparatedInts $ head example
+      let bingoBoards = readBingoBoards $ map readWhitespaceSeparatedInts $ tail example
+      bingoBoards `shouldBe` []
+
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path
 
@@ -105,3 +113,13 @@ readCommand s = do
   case words s of
     [c, n] -> (,) c <$> readMaybe n
     _ -> Nothing
+
+readCommaSeparatedInts :: String -> [Int]
+readCommaSeparatedInts = mapMaybe readMaybe . split (dropDelims $ oneOf ",")
+
+readWhitespaceSeparatedInts :: String -> [Int]
+readWhitespaceSeparatedInts = mapMaybe readMaybe . words
+
+readBingoBoards :: [[Int]] -> [([[Int]], [[Int]])]
+readBingoBoards (_:a:b:c:d:e:rest) = ([a, b, c, d, e], transpose [a, b, c, d, e]) : readBingoBoards rest
+readBingoBoards _ = []

@@ -13,7 +13,7 @@ where
 import Data.List
 
 pairs :: [a] -> [(a, a)]
-pairs = zip <*> tail
+pairs = zip <*> tail 
 
 pairsByThree :: [a] -> [(a, a)]
 pairsByThree = zip <*> tail . tail . tail

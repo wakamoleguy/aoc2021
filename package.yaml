@@ -48,3 +48,4 @@ tests:
     - advent2021
     - hspec
     - time
+    - split
