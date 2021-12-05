@@ -8,6 +8,7 @@ module Lib
     oxygenConsumption,
     c02Consumption,
     playBingo,
+    loseAtBingo,
   )
 where
 
@@ -130,3 +131,13 @@ isWinner (r:rs, c:cs) = isWinner (rs, cs)
 
 score :: BingoBoard -> Int
 score = sum . map sum . fst
+
+loseAtBingo :: [Int] -> [BingoBoard] -> Int
+loseAtBingo [] _ = 0
+loseAtBingo (n:ns) bs@(b:_) =
+  let stampedBoards = map (stamp n) bs
+      winningBoards = filter isWinner stampedBoards
+      losingBoards = filter (not . isWinner) stampedBoards
+  in case losingBoards of
+    [] -> n * (score $ head winningBoards)
+    _ -> loseAtBingo ns losingBoards

@@ -103,10 +103,22 @@ main = hspec $ do
       playBingo bingoCall bingoBoards `shouldBe` 4512
 
     it "solves Day 4A" $ do
-      example <- readLines "inputs/day4.txt"
+      input <- readLines "inputs/day4.txt"
+      let bingoCall = readCommaSeparatedInts $ head input
+      let bingoBoards = readBingoBoards $ map readWhitespaceSeparatedInts $ tail input
+      playBingo bingoCall bingoBoards `shouldBe` 8136
+
+    it "solves a simple Day 4B example" $ do
+      example <- readLines "inputs/day4-example.txt"
       let bingoCall = readCommaSeparatedInts $ head example
       let bingoBoards = readBingoBoards $ map readWhitespaceSeparatedInts $ tail example
-      playBingo bingoCall bingoBoards `shouldBe` 8136
+      loseAtBingo bingoCall bingoBoards `shouldBe` 1924
+
+    it "solves Day 4B" $ do
+      input <- readLines "inputs/day4.txt"
+      let bingoCall = readCommaSeparatedInts $ head input
+      let bingoBoards = readBingoBoards $ map readWhitespaceSeparatedInts $ tail input
+      loseAtBingo bingoCall bingoBoards `shouldBe` 12738
 
 
 readLines :: FilePath -> IO [String]
