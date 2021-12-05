@@ -142,6 +142,13 @@ main = hspec $ do
       let parsed = map readPoints input
       (length . findDangerousPoints . filter isCardinal) parsed `shouldBe` 6564
 
+    it "solves a simple Day 5B example" $ do
+      length (findDangerousPoints example) `shouldBe` 12
+    it "solves Day 5B" $ do
+      input <- readLines "inputs/day5.txt"
+      let parsed = map readPoints input
+      length (findDangerousPoints parsed) `shouldBe` 19172
+
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path
 
