@@ -120,6 +120,21 @@ main = hspec $ do
       let bingoBoards = readBingoBoards $ map readWhitespaceSeparatedInts $ tail input
       loseAtBingo bingoCall bingoBoards `shouldBe` 12738
 
+  describe "Day 5" $ do
+    let example =
+          [ ((0, 9), (5, 9)),
+            ((8, 0), (0, 8)),
+            ((9, 4), (3, 4)),
+            ((2, 2), (2, 1)),
+            ((7, 0), (7, 4)),
+            ((6, 4), (2, 0)),
+            ((0, 9), (2, 9)),
+            ((3, 4), (1, 4)),
+            ((0, 0), (8, 8)),
+            ((5, 5), (8, 2))
+          ]
+    it "solves a simple Day 5A example" $ do
+      length example `shouldBe` 6
 
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path
@@ -140,5 +155,5 @@ readWhitespaceSeparatedInts :: String -> [Int]
 readWhitespaceSeparatedInts = mapMaybe readMaybe . words
 
 readBingoBoards :: [[Int]] -> [([[Int]], [[Int]])]
-readBingoBoards (_:a:b:c:d:e:rest) = ([a, b, c, d, e], transpose [a, b, c, d, e]) : readBingoBoards rest
+readBingoBoards (_ : a : b : c : d : e : rest) = ([a, b, c, d, e], transpose [a, b, c, d, e]) : readBingoBoards rest
 readBingoBoards _ = []

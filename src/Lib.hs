@@ -15,7 +15,7 @@ where
 import Data.List
 
 pairs :: [a] -> [(a, a)]
-pairs = zip <*> tail 
+pairs = zip <*> tail
 
 pairsByThree :: [a] -> [(a, a)]
 pairsByThree = zip <*> tail . tail . tail
@@ -98,7 +98,6 @@ oxygenConsumption = calculateFilterCode mostCommonBit
 c02Consumption :: [String] -> Int
 c02Consumption = calculateFilterCode leastCommonBit
 
-
 --------------------------------------------------------------------------------
 -- Day 4 - Giant Squid
 --------------------------------------------------------------------------------
@@ -110,12 +109,12 @@ type BingoBoard = ([[Int]], [[Int]])
 
 playBingo :: [Int] -> [BingoBoard] -> Int
 playBingo [] _ = 0
-playBingo (n:ns) bs =
+playBingo (n : ns) bs =
   let stampedBoards = map (stamp n) bs
       winningBoard = find isWinner stampedBoards
-  in case winningBoard of
-    Just b -> n * score b
-    Nothing -> playBingo ns stampedBoards
+   in case winningBoard of
+        Just b -> n * score b
+        Nothing -> playBingo ns stampedBoards
 
 stamp :: Int -> BingoBoard -> BingoBoard
 stamp n (rs, cs) = (map f rs, map f cs)
@@ -124,20 +123,26 @@ stamp n (rs, cs) = (map f rs, map f cs)
     f = filter (n /=)
 
 isWinner :: BingoBoard -> Bool
-isWinner ([]:rs, cs) = True
-isWinner (rs, []:cs) = True
+isWinner ([] : rs, cs) = True
+isWinner (rs, [] : cs) = True
 isWinner ([], []) = False
-isWinner (r:rs, c:cs) = isWinner (rs, cs)
+isWinner (r : rs, c : cs) = isWinner (rs, cs)
+isWinner _ = error "Invalid board - unequal rows and cols"
 
 score :: BingoBoard -> Int
 score = sum . map sum . fst
 
 loseAtBingo :: [Int] -> [BingoBoard] -> Int
 loseAtBingo [] _ = 0
-loseAtBingo (n:ns) bs@(b:_) =
+loseAtBingo (n : ns) bs@(b : _) =
   let stampedBoards = map (stamp n) bs
       winningBoards = filter isWinner stampedBoards
       losingBoards = filter (not . isWinner) stampedBoards
-  in case losingBoards of
-    [] -> n * (score $ head winningBoards)
-    _ -> loseAtBingo ns losingBoards
+   in case losingBoards of
+        [] -> n * score (head winningBoards)
+        _ -> loseAtBingo ns losingBoards
+loseAtBingo _ _ = error "Invalid game - No boards to play"
+
+--------------------------------------------------------------------------------
+-- Day 5 - Hydrothermal Venture
+--------------------------------------------------------------------------------
