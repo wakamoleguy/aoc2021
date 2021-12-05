@@ -9,10 +9,15 @@ module Lib
     c02Consumption,
     playBingo,
     loseAtBingo,
+    isCardinal,
+    pointsBetween,
+    dangerousPoints,
+    findDangerousPoints,
   )
 where
 
 import Data.List
+import qualified Data.Set as Set
 
 pairs :: [a] -> [(a, a)]
 pairs = zip <*> tail
@@ -146,3 +151,24 @@ loseAtBingo _ _ = error "Invalid game - No boards to play"
 --------------------------------------------------------------------------------
 -- Day 5 - Hydrothermal Venture
 --------------------------------------------------------------------------------
+
+isCardinal :: ((Int, Int), (Int, Int)) -> Bool
+isCardinal ((x, y), (x', y')) = x == x' || y == y'
+
+pointsBetween :: (Int, Int) -> (Int, Int) -> [(Int, Int)]
+pointsBetween (x, y) (x', y') =
+  let xs = if x == x' then repeat x else [x, x + signum (x' - x) .. x']
+      ys = if y == y' then repeat y else [y, y + signum (y' - y) .. y']
+   in zip xs ys
+
+dangerousPoints :: [(Int, Int)] -> [(Int, Int)]
+dangerousPoints ps = Set.toList $ dangerousPoints' ps Set.empty Set.empty
+  where
+    dangerousPoints' [] seen ds = ds
+    dangerousPoints' (p : ps') seen ds =
+      if p `Set.member` seen
+        then dangerousPoints' ps' (p `Set.insert` seen) (p `Set.insert` ds)
+        else dangerousPoints' ps' (p `Set.insert` seen) ds
+
+findDangerousPoints :: [((Int, Int), (Int, Int))] -> [(Int, Int)]
+findDangerousPoints = dangerousPoints . concatMap (uncurry pointsBetween)

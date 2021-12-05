@@ -1,10 +1,8 @@
-import Control.Monad
-import Data.List
-import Data.List.Split
-import Data.Maybe
-import Data.Time
-import Lib
-import Test.Hspec
+import Data.List (transpose)
+import Data.List.Split (dropDelims, oneOf, split)
+import Data.Maybe (mapMaybe)
+import Lib (c02Consumption, calculateCoordinates, calculateSimpleCoordinates, countDepthIncreases, countDepthWindowIncreases, dangerousPoints, findDangerousPoints, isCardinal, loseAtBingo, oxygenConsumption, playBingo, pointsBetween, powerConsumption)
+import Test.Hspec (describe, hspec, it, shouldBe)
 import Text.Printf (PrintfArg (parseFormat))
 import Text.Read (readMaybe)
 
@@ -134,7 +132,15 @@ main = hspec $ do
             ((5, 5), (8, 2))
           ]
     it "solves a simple Day 5A example" $ do
-      length example `shouldBe` 6
+      length (filter isCardinal example) `shouldBe` 6
+      uncurry pointsBetween (head example) `shouldBe` [(0, 9), (1, 9), (2, 9), (3, 9), (4, 9), (5, 9)]
+      pointsBetween (9, 4) (3, 4) `shouldBe` [(9, 4), (8, 4), (7, 4), (6, 4), (5, 4), (4, 4), (3, 4)]
+      (length . findDangerousPoints . filter isCardinal) example `shouldBe` 5
+
+    it "solves Day 5A" $ do
+      input <- readLines "inputs/day5.txt"
+      let parsed = map readPoints input
+      (length . findDangerousPoints . filter isCardinal) parsed `shouldBe` 6564
 
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path
@@ -153,6 +159,12 @@ readCommaSeparatedInts = mapMaybe readMaybe . split (dropDelims $ oneOf ",")
 
 readWhitespaceSeparatedInts :: String -> [Int]
 readWhitespaceSeparatedInts = mapMaybe readMaybe . words
+
+readPoints :: String -> ((Int, Int), (Int, Int))
+readPoints = zipTuple . mapMaybe readMaybe . split (dropDelims $ oneOf ", ->")
+  where
+    zipTuple (x : y : x' : y' : _) = ((x, y), (x', y'))
+    zipTuple _ = error "Invalid input"
 
 readBingoBoards :: [[Int]] -> [([[Int]], [[Int]])]
 readBingoBoards (_ : a : b : c : d : e : rest) = ([a, b, c, d, e], transpose [a, b, c, d, e]) : readBingoBoards rest
