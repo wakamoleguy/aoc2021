@@ -1,7 +1,22 @@
 import Data.List (transpose)
 import Data.List.Split (dropDelims, oneOf, split)
 import Data.Maybe (mapMaybe)
-import Lib (c02Consumption, calculateCoordinates, calculateSimpleCoordinates, countDepthIncreases, countDepthWindowIncreases, dangerousPoints, findDangerousPoints, isCardinal, loseAtBingo, oxygenConsumption, playBingo, pointsBetween, powerConsumption)
+import Lib
+  ( c02Consumption,
+    calculateCoordinates,
+    calculateSimpleCoordinates,
+    countDepthIncreases,
+    countDepthWindowIncreases,
+    dangerousPoints,
+    findDangerousPoints,
+    isCardinal,
+    loseAtBingo,
+    oxygenConsumption,
+    playBingo,
+    pointsBetween,
+    powerConsumption,
+    simulateLanternfish,
+  )
 import Test.Hspec (describe, hspec, it, shouldBe)
 import Text.Printf (PrintfArg (parseFormat))
 import Text.Read (readMaybe)
@@ -148,6 +163,27 @@ main = hspec $ do
       input <- readLines "inputs/day5.txt"
       let parsed = map readPoints input
       length (findDangerousPoints parsed) `shouldBe` 19172
+
+  describe "Day 6" $ do
+    let example = [3, 4, 3, 1, 2]
+
+    it "solves a simple Day 6A example" $ do
+      simulateLanternfish example 0 `shouldBe` 5
+      simulateLanternfish example 1 `shouldBe` 5
+      simulateLanternfish example 2 `shouldBe` 6
+      simulateLanternfish example 3 `shouldBe` 7
+      simulateLanternfish example 4 `shouldBe` 9
+      simulateLanternfish example 5 `shouldBe` 10
+      simulateLanternfish example 80 `shouldBe` 5934
+
+    it "solves Day 6A" $ do
+      input <- readCommaSeparatedInts <$> head <$> readLines "inputs/day6.txt"
+      simulateLanternfish input 80 `shouldBe` 371379
+
+    it "solves Day 6B" $ do
+      simulateLanternfish example 256 `shouldBe` 26984457539
+      input <- readCommaSeparatedInts <$> head <$> readLines "inputs/day6.txt"
+      simulateLanternfish input 256 `shouldBe` 1674303997472
 
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path

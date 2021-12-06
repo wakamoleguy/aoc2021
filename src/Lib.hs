@@ -13,6 +13,7 @@ module Lib
     pointsBetween,
     dangerousPoints,
     findDangerousPoints,
+    simulateLanternfish,
   )
 where
 
@@ -172,3 +173,17 @@ dangerousPoints ps = Set.toList $ dangerousPoints' ps Set.empty Set.empty
 
 findDangerousPoints :: [((Int, Int), (Int, Int))] -> [(Int, Int)]
 findDangerousPoints = dangerousPoints . concatMap (uncurry pointsBetween)
+
+--------------------------------------------------------------------------------
+-- Day 6 - Lantern Fish
+--------------------------------------------------------------------------------
+to9Tuple :: [a] -> (a, a, a, a, a, a, a, a, a)
+to9Tuple [x, y, z, w, a, b, c, d, e] = (x, y, z, w, a, b, c, d, e)
+to9Tuple _ = error "Invalid tuple"
+
+simulateLanternfish :: [Int] -> Int -> Int
+simulateLanternfish fishes days =
+  let fishCounts = to9Tuple [length (filter (== i) fishes) | i <- [0 .. 8]]
+      simulate' (a, b, c, d, e, f, g, h, i) 0 = a + b + c + d + e + f + g + h + i
+      simulate' (a, b, c, d, e, f, g, h, i) n = simulate' (b, c, d, e, f, g, h + a, i, a) (n -1)
+   in simulate' fishCounts days
