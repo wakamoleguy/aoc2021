@@ -202,11 +202,13 @@ fuel' fueler crabs =
       alignToPosition x = sum $ map (fueler x) crabs
    in minimum $ map alignToPosition [minCrab .. maxCrab]
 
+-- TODO - Prove to myself that median minimizes this linear distance between points
 fuelToAlignCrabs :: [Int] -> Int
 fuelToAlignCrabs = fuel' fueler
   where
     fueler x y = abs (x - y)
 
+-- TODO - Prove to myself that mean minimizes this quadratic distance between points
 nonLinearFuelToAlignCrabs :: [Int] -> Int
 nonLinearFuelToAlignCrabs = fuel' fueler
   where
