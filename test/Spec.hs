@@ -9,8 +9,10 @@ import Lib
     countDepthWindowIncreases,
     dangerousPoints,
     findDangerousPoints,
+    fuelToAlignCrabs,
     isCardinal,
     loseAtBingo,
+    nonLinearFuelToAlignCrabs,
     oxygenConsumption,
     playBingo,
     pointsBetween,
@@ -177,13 +179,30 @@ main = hspec $ do
       simulateLanternfish example 80 `shouldBe` 5934
 
     it "solves Day 6A" $ do
-      input <- readCommaSeparatedInts <$> head <$> readLines "inputs/day6.txt"
+      input <- readCommaSeparatedInts . head <$> readLines "inputs/day6.txt"
       simulateLanternfish input 80 `shouldBe` 371379
 
     it "solves Day 6B" $ do
       simulateLanternfish example 256 `shouldBe` 26984457539
-      input <- readCommaSeparatedInts <$> head <$> readLines "inputs/day6.txt"
+      input <- readCommaSeparatedInts . head <$> readLines "inputs/day6.txt"
       simulateLanternfish input 256 `shouldBe` 1674303997472
+
+  describe "Day 7" $ do
+    let example = [16, 1, 2, 0, 4, 2, 7, 1, 2, 14]
+
+    it "solves a simple Day 7A example" $ do
+      fuelToAlignCrabs example `shouldBe` 37
+
+    it "solves Day 7A" $ do
+      input <- readCommaSeparatedInts . head <$> readLines "inputs/day7.txt"
+      fuelToAlignCrabs input `shouldBe` 351901
+
+    it "solves a simple Day 7B example" $ do
+      nonLinearFuelToAlignCrabs example `shouldBe` 168
+
+    it "solves Day 7B" $ do
+      input <- readCommaSeparatedInts . head <$> readLines "inputs/day7.txt"
+      nonLinearFuelToAlignCrabs input `shouldBe` 101079875
 
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path

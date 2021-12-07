@@ -14,6 +14,8 @@ module Lib
     dangerousPoints,
     findDangerousPoints,
     simulateLanternfish,
+    fuelToAlignCrabs,
+    nonLinearFuelToAlignCrabs,
   )
 where
 
@@ -177,6 +179,7 @@ findDangerousPoints = dangerousPoints . concatMap (uncurry pointsBetween)
 --------------------------------------------------------------------------------
 -- Day 6 - Lantern Fish
 --------------------------------------------------------------------------------
+
 to9Tuple :: [a] -> (a, a, a, a, a, a, a, a, a)
 to9Tuple [x, y, z, w, a, b, c, d, e] = (x, y, z, w, a, b, c, d, e)
 to9Tuple _ = error "Invalid tuple"
@@ -187,3 +190,24 @@ simulateLanternfish fishes days =
       simulate' (a, b, c, d, e, f, g, h, i) 0 = a + b + c + d + e + f + g + h + i
       simulate' (a, b, c, d, e, f, g, h, i) n = simulate' (b, c, d, e, f, g, h + a, i, a) (n -1)
    in simulate' fishCounts days
+
+--------------------------------------------------------------------------------
+-- Day 6 - The Treachery of Whales
+--------------------------------------------------------------------------------
+
+fuel' :: (Int -> Int -> Int) -> [Int] -> Int
+fuel' fueler crabs =
+  let minCrab = minimum crabs
+      maxCrab = maximum crabs
+      alignToPosition x = sum $ map (fueler x) crabs
+   in minimum $ map alignToPosition [minCrab .. maxCrab]
+
+fuelToAlignCrabs :: [Int] -> Int
+fuelToAlignCrabs = fuel' fueler
+  where
+    fueler x y = abs (x - y)
+
+nonLinearFuelToAlignCrabs :: [Int] -> Int
+nonLinearFuelToAlignCrabs = fuel' fueler
+  where
+    fueler x y = abs (x - y) * (abs (x - y) + 1) `div` 2
