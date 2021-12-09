@@ -20,11 +20,17 @@ module Lib
     decodeDigits,
     decodeOutput,
     decode,
+    riskLevel,
+    lowPoints,
+    basinSizes,
   )
 where
 
 import Data.List
+import qualified Data.Map as Map
+import Data.Maybe
 import qualified Data.Set as Set
+import Debug.Trace
 
 pairs :: [a] -> [(a, a)]
 pairs = zip <*> tail
@@ -271,3 +277,56 @@ decode :: [String] -> [String] -> Int
 decode digits = foldl' (\b a -> b * 10 + decode' a) 0
   where
     decode' = decodeOutput (decodeDigits digits)
+
+--------------------------------------------------------------------------------
+-- Day 9 - Smoke Basin
+--------------------------------------------------------------------------------
+wrapGrid :: [[a]] -> [[Maybe a]]
+wrapGrid a = maybeRow : map wrappedRow a ++ [maybeRow]
+  where
+    gridLength = length $ head a
+    maybeRow = replicate (gridLength + 2) Nothing
+    wrappedRow row = Nothing : map Just row ++ [Nothing]
+
+rowWindows :: [[a]] -> [([a], [a], [a])]
+rowWindows = concatMap columnWindows . triples
+  where
+    columnWindows (a, b, c) = triples $ transpose [a, b, c]
+
+lowPoint :: ([Maybe Int], [Maybe Int], [Maybe Int]) -> Maybe Int
+lowPoint ([_, up, _], [left, Just center, right], [_, down, _]) =
+  let getMaybe (Just x) = x
+      getMaybe Nothing = maxBound
+      isLowPoint = all ((> center) . getMaybe) [up, left, right, down]
+   in if isLowPoint then Just center else Nothing
+lowPoint _ = Nothing
+
+lowPoints :: [[Int]] -> [Int]
+lowPoints grid = mapMaybe lowPoint $ rowWindows $ wrapGrid grid
+
+riskLevel :: Int -> Int
+riskLevel = (1 +)
+
+-- Part 2
+
+basinSizes :: [[Int]] -> [Int]
+basinSizes grid = sizes' allPoints Set.empty [] 0
+  where
+    numRows = length grid
+    numCols = length $ head grid
+    valid (x, y) = x >= 0 && x < numRows && y >= 0 && y < numCols && grid !! x !! y /= 9
+    neighbors (x, y) = filter valid [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
+    allPoints = filter valid $ do
+      r <- [0 .. numRows - 1]
+      c <- [0 .. numCols - 1]
+      return (r, c)
+    sizes' (p : ps) seen [] i = if i == 0 then sizes' ps seen [p] 0 else i : sizes' ps seen [p] 0
+    sizes' [] seen [] i = [i | i /= 0]
+    sizes' rest seen (p : ps) i =
+      if Set.member p seen
+        then sizes' rest seen ps i
+        else
+          ( let neighbors' = filter (`Set.notMember` seen) $ neighbors p
+                seen' = Set.insert p seen
+             in sizes' rest seen' (neighbors' ++ ps) (i + 1)
+          )

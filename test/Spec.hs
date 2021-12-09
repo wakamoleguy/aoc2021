@@ -1,8 +1,10 @@
 import Data.List (sort, transpose)
 import Data.List.Split (dropDelims, oneOf, split)
+import qualified Data.Map as Map
 import Data.Maybe (mapMaybe)
 import Lib
-  ( c02Consumption,
+  ( basinSizes,
+    c02Consumption,
     calculateCoordinates,
     calculateSimpleCoordinates,
     countDepthIncreases,
@@ -16,11 +18,13 @@ import Lib
     fuelToAlignCrabs,
     isCardinal,
     loseAtBingo,
+    lowPoints,
     nonLinearFuelToAlignCrabs,
     oxygenConsumption,
     playBingo,
     pointsBetween,
     powerConsumption,
+    riskLevel,
     simulateLanternfish,
   )
 import Test.Hspec (describe, hspec, it, shouldBe)
@@ -226,6 +230,32 @@ main = hspec $ do
     it "solves Day 8B" $ do
       input <- map (map words . split (dropDelims $ oneOf "|")) <$> readLines "inputs/day8.txt"
       sum (map (\line -> decode (head line) (head (tail line))) input) `shouldBe` 1040429
+
+  describe "Day 9" $ do
+    let example =
+          [ [2, 1, 9, 9, 9, 4, 3, 2, 1, 0],
+            [3, 9, 8, 7, 8, 9, 4, 9, 2, 1],
+            [9, 8, 5, 6, 7, 8, 9, 8, 9, 2],
+            [8, 7, 6, 7, 8, 9, 6, 7, 8, 9],
+            [9, 8, 9, 9, 9, 6, 5, 6, 7, 8]
+          ]
+    it "solves a simple Day 9A example" $ do
+      lowPoints example `shouldBe` [1, 0, 5, 5]
+      sum (map riskLevel (lowPoints example)) `shouldBe` 15
+
+    it "solves Day 9A" $ do
+      lines <- readLines "inputs/day9.txt"
+      let input = map (map (read . (: []))) lines
+      sum (map riskLevel (lowPoints input)) `shouldBe` 545
+
+    it "solves a simple Day 9B example" $ do
+      basinSizes example `shouldBe` [3, 9, 14, 9]
+      (product . take 3 . reverse . sort . basinSizes) example `shouldBe` 1134
+
+    it "solves Day 9B" $ do
+      lines <- readLines "inputs/day9.txt"
+      let input = map (map (read . (: []))) lines
+      (product . take 3 . reverse . sort . basinSizes) input `shouldBe` 950600
 
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path
