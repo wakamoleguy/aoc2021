@@ -1,4 +1,4 @@
-import Data.List (transpose)
+import Data.List (sort, transpose)
 import Data.List.Split (dropDelims, oneOf, split)
 import Data.Maybe (mapMaybe)
 import Lib
@@ -7,7 +7,11 @@ import Lib
     calculateSimpleCoordinates,
     countDepthIncreases,
     countDepthWindowIncreases,
+    countDigits1478,
     dangerousPoints,
+    decode,
+    decodeDigits,
+    decodeOutput,
     findDangerousPoints,
     fuelToAlignCrabs,
     isCardinal,
@@ -203,6 +207,25 @@ main = hspec $ do
     it "solves Day 7B" $ do
       input <- readCommaSeparatedInts . head <$> readLines "inputs/day7.txt"
       nonLinearFuelToAlignCrabs input `shouldBe` 101079875
+
+  describe "Day 8" $ do
+    it "solves a simple Day 8A example" $ do
+      example <- map (map words . split (dropDelims $ oneOf "|")) <$> readLines "inputs/day8-example.txt"
+      let outputs = concatMap tail example
+      sum (map countDigits1478 outputs) `shouldBe` 26
+
+    it "solves Day 8A" $ do
+      input <- map (map words . split (dropDelims $ oneOf "|")) <$> readLines "inputs/day8.txt"
+      let outputs = concatMap tail input
+      sum (map countDigits1478 outputs) `shouldBe` 488
+
+    it "solves a simple Day 8B example" $ do
+      example <- map (map words . split (dropDelims $ oneOf "|")) <$> readLines "inputs/day8-example.txt"
+      sum (map (\line -> decode (head line) (head (tail line))) example) `shouldBe` 61229
+
+    it "solves Day 8B" $ do
+      input <- map (map words . split (dropDelims $ oneOf "|")) <$> readLines "inputs/day8.txt"
+      sum (map (\line -> decode (head line) (head (tail line))) input) `shouldBe` 1040429
 
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path
