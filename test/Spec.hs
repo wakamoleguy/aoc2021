@@ -1,3 +1,4 @@
+import Data.Array (listArray)
 import Data.List (sort, transpose)
 import Data.List.Split (dropDelims, oneOf, split)
 import qualified Data.Map as Map
@@ -233,20 +234,24 @@ main = hspec $ do
 
   describe "Day 9" $ do
     let example =
-          [ [2, 1, 9, 9, 9, 4, 3, 2, 1, 0],
-            [3, 9, 8, 7, 8, 9, 4, 9, 2, 1],
-            [9, 8, 5, 6, 7, 8, 9, 8, 9, 2],
-            [8, 7, 6, 7, 8, 9, 6, 7, 8, 9],
-            [9, 8, 9, 9, 9, 6, 5, 6, 7, 8]
-          ]
+          listArray (0, 4) $
+            map
+              (listArray (0, 9))
+              [ [2, 1, 9, 9, 9, 4, 3, 2, 1, 0],
+                [3, 9, 8, 7, 8, 9, 4, 9, 2, 1],
+                [9, 8, 5, 6, 7, 8, 9, 8, 9, 2],
+                [8, 7, 6, 7, 8, 9, 6, 7, 8, 9],
+                [9, 8, 9, 9, 9, 6, 5, 6, 7, 8]
+              ]
     it "solves a simple Day 9A example" $ do
-      lowPoints example `shouldBe` [1, 0, 5, 5]
-      sum (map riskLevel (lowPoints example)) `shouldBe` 15
+      lowPoints example `shouldBe` [(0, 1), (0, 9), (2, 2), (4, 6)]
+      sum (map (riskLevel example) (lowPoints example)) `shouldBe` 15
 
     it "solves Day 9A" $ do
       lines <- readLines "inputs/day9.txt"
       let input = map (map (read . (: []))) lines
-      sum (map riskLevel (lowPoints input)) `shouldBe` 545
+      let grid = listArray (0, 99) (map (listArray (0, 99)) input)
+      sum (map (riskLevel grid) (lowPoints grid)) `shouldBe` 545
 
     it "solves a simple Day 9B example" $ do
       basinSizes example `shouldBe` [3, 9, 14, 9]
@@ -255,7 +260,8 @@ main = hspec $ do
     it "solves Day 9B" $ do
       lines <- readLines "inputs/day9.txt"
       let input = map (map (read . (: []))) lines
-      (product . take 3 . reverse . sort . basinSizes) input `shouldBe` 950600
+      let grid = listArray (0, length input - 1) (map (listArray (0, length (head input) - 1)) input)
+      (product . take 3 . reverse . sort . basinSizes) grid `shouldBe` 950600
 
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path
