@@ -182,7 +182,7 @@ dangerousPoints ps = Set.toList $ dangerousPoints' ps Set.empty Set.empty
     dangerousPoints' [] seen ds = ds
     dangerousPoints' (p : ps') seen ds =
       if p `Set.member` seen
-        then dangerousPoints' ps' (p `Set.insert` seen) (p `Set.insert` ds)
+        then dangerousPoints' ps' seen (p `Set.insert` ds)
         else dangerousPoints' ps' (p `Set.insert` seen) ds
 
 findDangerousPoints :: [((Int, Int), (Int, Int))] -> [(Int, Int)]

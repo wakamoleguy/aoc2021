@@ -49,6 +49,6 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - advent2021
-    - hspec
     - time
     - split
+    - hspec
