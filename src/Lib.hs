@@ -27,6 +27,7 @@ module Lib
 where
 
 import Data.Array (Array, Ix (inRange), bounds, (!))
+import Data.Heap (MaxHeap, empty, insert)
 import Data.List (find, foldl', sort, transpose)
 import qualified Data.Map as Map
 import Data.Maybe (mapMaybe)
@@ -307,8 +308,8 @@ riskLevel grid (x, y) = 1 + (grid ! x ! y)
 
 -- Part 2
 
-basinSizes :: Grid -> [Int]
-basinSizes grid = map sizeBasin (lowPoints grid)
+basinSizes :: Grid -> MaxHeap Int
+basinSizes grid = foldr (insert . sizeBasin) empty (lowPoints grid)
   where
     ns = neighbors grid
     sizeBasin lowPoint = size' Set.empty [lowPoint] 0

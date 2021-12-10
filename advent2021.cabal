@@ -34,6 +34,7 @@ library
       array
     , base >=4.7 && <5
     , containers
+    , heap
   default-language: Haskell2010
 
 executable advent2021-exe
@@ -48,6 +49,7 @@ executable advent2021-exe
     , array
     , base >=4.7 && <5
     , containers
+    , heap
   default-language: Haskell2010
 
 test-suite advent2021-test
@@ -63,6 +65,7 @@ test-suite advent2021-test
     , array
     , base >=4.7 && <5
     , containers
+    , heap
     , hspec
     , split
     , time

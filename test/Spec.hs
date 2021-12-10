@@ -1,4 +1,5 @@
 import Data.Array (listArray)
+import qualified Data.Heap as Heap
 import Data.List (sort, transpose)
 import Data.List.Split (dropDelims, oneOf, split)
 import qualified Data.Map as Map
@@ -254,14 +255,14 @@ main = hspec $ do
       sum (map (riskLevel grid) (lowPoints grid)) `shouldBe` 545
 
     it "solves a simple Day 9B example" $ do
-      basinSizes example `shouldBe` [3, 9, 14, 9]
-      (product . take 3 . reverse . sort . basinSizes) example `shouldBe` 1134
+      basinSizes example `shouldBe` foldr Heap.insert Heap.empty [3, 9, 14, 9]
+      (product . Heap.take 3 . basinSizes) example `shouldBe` 1134
 
     it "solves Day 9B" $ do
       lines <- readLines "inputs/day9.txt"
       let input = map (map (read . (: []))) lines
       let grid = listArray (0, length input - 1) (map (listArray (0, length (head input) - 1)) input)
-      (product . take 3 . reverse . sort . basinSizes) grid `shouldBe` 950600
+      (product . Heap.take 3 . basinSizes) grid `shouldBe` 950600
 
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path
