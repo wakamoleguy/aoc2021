@@ -5,10 +5,12 @@ import Data.List.Split (dropDelims, oneOf, split)
 import qualified Data.Map as Map
 import Data.Maybe (mapMaybe)
 import Lib
-  ( basinSizes,
+  ( SyntaxResult (..),
+    basinSizes,
     c02Consumption,
     calculateCoordinates,
     calculateSimpleCoordinates,
+    checkSyntax,
     countDepthIncreases,
     countDepthWindowIncreases,
     countDigits1478,
@@ -21,12 +23,15 @@ import Lib
     isCardinal,
     loseAtBingo,
     lowPoints,
+    median,
     nonLinearFuelToAlignCrabs,
     oxygenConsumption,
     playBingo,
     pointsBetween,
     powerConsumption,
     riskLevel,
+    scoreAutocomplete,
+    scoreSyntax,
     simulateLanternfish,
   )
 import Test.Hspec (describe, hspec, it, shouldBe)
@@ -263,6 +268,17 @@ main = hspec $ do
       let input = map (map (read . (: []))) lines
       let grid = listArray (0, length input - 1) (map (listArray (0, length (head input) - 1)) input)
       (product . Heap.take 3 . basinSizes) grid `shouldBe` 950600
+
+  describe "Day 10" $ do
+    it "solves Day 10A" $ do
+      input <- readLines "inputs/day10.txt"
+      sum (map (scoreSyntax . checkSyntax) input) `shouldBe` 369105
+    it "solves a simple Day 10B example" $ do
+      let example = "}}]])})]"
+      scoreAutocomplete (Incomplete example) `shouldBe` 288957
+    it "solves Day 10B" $ do
+      input <- readLines "inputs/day10.txt"
+      (median . filter (/= 0) . map (scoreAutocomplete . checkSyntax) $ input) `shouldBe` 3999363569
 
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path
