@@ -36,10 +36,13 @@ import Lib
     buildGraph,
     paths,
     pathsDoubleVisit,
+    countPaths,
+    Cave (..),
   )
 import Test.Hspec (describe, hspec, it, shouldBe)
 import Text.Printf (PrintfArg (parseFormat))
 import Text.Read (readMaybe)
+import qualified Data.Set as Set
 
 main :: IO ()
 main = hspec $ do
@@ -293,18 +296,21 @@ main = hspec $ do
                     "b-end" ]
 
     it "solves a simple Day11A example" $ do
-      length (paths (buildGraph example)) `shouldBe` 10
+      countPaths (buildGraph example) Set.empty False (Small "start") `shouldBe` 10
 
     it "solves Day 11A" $ do
       input <- readLines "inputs/day11.txt"
-      length (paths (buildGraph input)) `shouldBe` 4659
+      countPaths (buildGraph input) Set.empty False (Small "start") `shouldBe` 4659
+
 
     it "solves a simple Day11B example" $ do
-      length (pathsDoubleVisit (buildGraph example)) `shouldBe` 36
+      countPaths (buildGraph example) Set.empty True (Small "start") `shouldBe` 36
+
 
     it "solves Day 11B" $ do
       input <- readLines "inputs/day11.txt"
-      length (pathsDoubleVisit (buildGraph input)) `shouldBe` 148962
+      countPaths (buildGraph input) Set.empty True (Small "start") `shouldBe` 148962
+
 
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path

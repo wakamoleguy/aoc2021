@@ -31,6 +31,8 @@ module Lib
     buildGraph,
     paths,
     pathsDoubleVisit,
+    countPaths,
+    Cave (..),
   )
 where
 
@@ -372,7 +374,7 @@ median xs =
         else (sorted !! (len `div` 2 - 1) + sorted !! (len `div` 2)) `div` 2
 
 --------------------------------------------------------------------------------
--- Day 11 - Passage Pathing
+-- Day 12 - Passage Pathing
 --------------------------------------------------------------------------------
 data Cave = Big String | Small String deriving (Eq, Show, Ord)
 
@@ -431,3 +433,14 @@ pathsDoubleVisit graph =
             seen' = Set.insert c seen
          in if isDbl' then [] else concatMap (map (c :) . path' seen' True) neighbors
   in path' Set.empty False (Small "start")
+
+countPaths :: Graph -> Set.Set Cave -> Bool -> Cave -> Int
+countPaths graph seen allowRepeat start =
+  let choose (Small "start") = 0
+      choose (Small "end") = 1
+      choose c@(Small _)
+        | c `Set.notMember` seen = countPaths graph (Set.insert c seen) allowRepeat c
+        | allowRepeat = countPaths graph seen False c
+        | otherwise = 0
+      choose c@(Big _) = countPaths graph seen allowRepeat c
+  in foldl' (\sum node -> sum + choose node) 0 $ graphNeighbors graph start
