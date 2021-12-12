@@ -33,6 +33,9 @@ import Lib
     scoreAutocomplete,
     scoreSyntax,
     simulateLanternfish,
+    buildGraph,
+    paths,
+    pathsDoubleVisit,
   )
 import Test.Hspec (describe, hspec, it, shouldBe)
 import Text.Printf (PrintfArg (parseFormat))
@@ -279,6 +282,29 @@ main = hspec $ do
     it "solves Day 10B" $ do
       input <- readLines "inputs/day10.txt"
       (median . filter (/= 0) . map (scoreAutocomplete . checkSyntax) $ input) `shouldBe` 3999363569
+
+  describe "Day 11" $ do
+    let example = [ "start-A",
+                    "start-b",
+                    "A-c",
+                    "A-b",
+                    "b-d",
+                    "A-end",
+                    "b-end" ]
+
+    it "solves a simple Day11A example" $ do
+      length (paths (buildGraph example)) `shouldBe` 10
+
+    it "solves Day 11A" $ do
+      input <- readLines "inputs/day11.txt"
+      length (paths (buildGraph input)) `shouldBe` 4659
+
+    it "solves a simple Day11B example" $ do
+      length (pathsDoubleVisit (buildGraph example)) `shouldBe` 36
+
+    it "solves Day 11B" $ do
+      input <- readLines "inputs/day11.txt"
+      length (pathsDoubleVisit (buildGraph input)) `shouldBe` 148962
 
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path
