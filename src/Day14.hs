@@ -7,6 +7,10 @@ import           Data.Maybe          (listToMaybe, mapMaybe)
 import           Debug.Trace         (trace)
 import           Util                (readLines)
 
+--------------------------------------------------------------------------------
+-- Day 14 - Extended Polymerization
+--------------------------------------------------------------------------------
+
 input = readLines "inputs/day14.txt"
 polymerBase = (++ "x") . head <$> input
 polymerInsertionRules =
