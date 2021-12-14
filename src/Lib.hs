@@ -33,13 +33,15 @@ module Lib
     pathsDoubleVisit,
     countPaths,
     Cave (..),
+    readFold,
+    foldDot,
   )
 where
 
 import           Data.Array      (Array, Ix (inRange), bounds, (!))
 import           Data.Char       (isLower)
 import           Data.Heap       (MaxHeap, empty, insert)
-import           Data.List       (find, foldl', sort, transpose)
+import           Data.List       (find, foldl', isPrefixOf, sort, transpose)
 import           Data.List.Split (splitOn)
 import qualified Data.Map.Strict as Map
 import           Data.Maybe      (mapMaybe)
@@ -444,3 +446,23 @@ countPaths graph seen allowRepeat start =
         | otherwise = 0
       choose c@(Big _) = countPaths graph seen allowRepeat c
   in foldl' (\sum node -> sum + choose node) 0 $ graphNeighbors graph start
+
+--------------------------------------------------------------------------------
+-- Day 13 - Transparent Origami
+--------------------------------------------------------------------------------
+
+data Fold = XF Int | YF Int
+
+readFold :: String -> Fold
+readFold s
+  | "fold along x=" `isPrefixOf` s = XF $ read $ drop 13 s
+  | "fold along y=" `isPrefixOf` s = YF $ read $ drop 13 s
+  | otherwise = undefined
+
+foldDot :: Fold -> (Int, Int) -> (Int, Int)
+foldDot (XF axis) (x, y)
+  | x < axis = (x, y)
+  | otherwise = (2 * axis - x, y)
+foldDot (YF axis) (x, y)
+  | y < axis = (x, y)
+  | otherwise = (x, 2 * axis - y)
