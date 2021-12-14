@@ -34,5 +34,5 @@ part13a = do
   Set.size . Set.fromList . fmap folder <$> coords
 part13b = do
   endDots <- Set.fromList <$> liftA2 (foldl' (\c f -> fmap (foldDot f) c)) coords folds
-  let grid = [[if Set.member (x, y) endDots then '#' else ' ' | x <- [0 .. 40]] | y <- [0 .. 5]]
+  let grid = [[if Set.member (x, y) endDots then '█' else ' ' | x <- [0 .. 40]] | y <- [0 .. 5]]
   return $ unlines grid
