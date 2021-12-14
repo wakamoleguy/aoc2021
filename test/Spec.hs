@@ -1,29 +1,53 @@
-import           Data.Array      (listArray)
-import           Data.Foldable   (toList)
-import qualified Data.Heap       as Heap
-import           Data.List       (foldl', genericDrop, sort, transpose)
-import           Data.List.Split (dropDelims, oneOf, split)
-import qualified Data.Map        as Map
-import           Data.Maybe      (mapMaybe)
-import qualified Data.Set        as Set
-import           Lib             (Cave (..), SyntaxResult (..), basinSizes,
-                                  buildGraph, c02Consumption,
-                                  calculateCoordinates,
-                                  calculateSimpleCoordinates, checkSyntax,
-                                  countDepthIncreases,
-                                  countDepthWindowIncreases, countDigits1478,
-                                  countPaths, dangerousPoints, decode,
-                                  decodeDigits, decodeOutput,
-                                  findDangerousPoints, foldDot,
-                                  fuelToAlignCrabs, isCardinal, loseAtBingo,
-                                  lowPoints, median, nonLinearFuelToAlignCrabs,
-                                  oxygenConsumption, paths, pathsDoubleVisit,
-                                  playBingo, pointsBetween, powerConsumption,
-                                  readFold, riskLevel, scoreAutocomplete,
-                                  scoreSyntax, simulateLanternfish)
-import           Test.Hspec      (describe, hspec, it, shouldBe)
-import           Text.Printf     (PrintfArg (parseFormat))
-import           Text.Read       (readMaybe)
+import Data.Array (listArray)
+import Data.Foldable (toList)
+import qualified Data.Heap as Heap
+import Data.List (foldl', genericDrop, sort, transpose)
+import Data.List.Split (dropDelims, oneOf, split)
+import qualified Data.Map as Map
+import Data.Maybe (mapMaybe)
+import qualified Data.Set as Set
+import Lib
+  ( Cave (..),
+    SyntaxResult (..),
+    basinSizes,
+    buildGraph,
+    c02Consumption,
+    calculateCoordinates,
+    calculateSimpleCoordinates,
+    checkSyntax,
+    countDepthIncreases,
+    countDepthWindowIncreases,
+    countDigits1478,
+    countDumboFlashes,
+    countPaths,
+    dangerousPoints,
+    decode,
+    decodeDigits,
+    decodeOutput,
+    findDangerousPoints,
+    findSynchronized,
+    foldDot,
+    fuelToAlignCrabs,
+    isCardinal,
+    loseAtBingo,
+    lowPoints,
+    median,
+    nonLinearFuelToAlignCrabs,
+    oxygenConsumption,
+    paths,
+    pathsDoubleVisit,
+    playBingo,
+    pointsBetween,
+    powerConsumption,
+    readFold,
+    riskLevel,
+    scoreAutocomplete,
+    scoreSyntax,
+    simulateLanternfish,
+  )
+import Test.Hspec (describe, hspec, it, shouldBe)
+import Text.Printf (PrintfArg (parseFormat))
+import Text.Read (readMaybe)
 
 main :: IO ()
 main = hspec $ do
@@ -267,14 +291,49 @@ main = hspec $ do
       input <- readLines "inputs/day10.txt"
       (median . filter (/= 0) . map (scoreAutocomplete . checkSyntax) $ input) `shouldBe` 3999363569
 
+  describe "Day 11" $ do
+    let basicExample =
+          listArray (0, 4) $
+            map
+              (listArray (0, 4))
+              [ [1, 1, 1, 1, 1],
+                [1, 9, 9, 9, 1],
+                [1, 9, 1, 9, 1],
+                [1, 9, 9, 9, 1],
+                [1, 1, 1, 1, 1]
+              ]
+
+    it "steps a simple Day 11A example" $ do
+      countDumboFlashes 1 basicExample `shouldBe` 9
+
+    it "solves a simple Day 11A example" $ do
+      example <- readLines "inputs/day11-example.txt"
+      let input = map (map (read . (: []))) example
+      let grid = listArray (0, 9) (map (listArray (0, 9)) input)
+      countDumboFlashes 100 grid `shouldBe` 1656
+
+    it "solves Day 11A" $ do
+      lines <- readLines "inputs/day11.txt"
+      let input = map (map (read . (: []))) lines
+      let grid = listArray (0, 9) (map (listArray (0, 9)) input)
+      countDumboFlashes 100 grid `shouldBe` 1688
+
+    it "solves Day 11B" $ do
+      lines <- readLines "inputs/day11.txt"
+      let input = map (map (read . (: []))) lines
+      let grid = listArray (0, 9) (map (listArray (0, 9)) input)
+      findSynchronized grid `shouldBe` 403
+
   describe "Day 12" $ do
-    let example = [ "start-A",
-                    "start-b",
-                    "A-c",
-                    "A-b",
-                    "b-d",
-                    "A-end",
-                    "b-end" ]
+    let example =
+          [ "start-A",
+            "start-b",
+            "A-c",
+            "A-b",
+            "b-d",
+            "A-end",
+            "b-end"
+          ]
 
     it "solves a simple Day12A example" $ do
       countPaths (buildGraph example) Set.empty False (Small "start") `shouldBe` 10
@@ -283,10 +342,8 @@ main = hspec $ do
       input <- readLines "inputs/day12.txt"
       countPaths (buildGraph input) Set.empty False (Small "start") `shouldBe` 4659
 
-
     it "solves a simple Day12B example" $ do
       countPaths (buildGraph example) Set.empty True (Small "start") `shouldBe` 36
-
 
     it "solves Day 12B" $ do
       input <- readLines "inputs/day12.txt"
@@ -295,24 +352,23 @@ main = hspec $ do
   describe "Day 13" $ do
     it "solves a simple Day 13 example" $ do
       lines <- readLines "inputs/day13-example.txt"
-      let coords = map ((\[x,y] -> (x, y)) . readCommaSeparatedInts) (takeWhile (/= "") lines)
+      let coords = map ((\[x, y] -> (x, y)) . readCommaSeparatedInts) (takeWhile (/= "") lines)
       let folds = drop 1 $ dropWhile (/= "") lines
       Set.size (Set.fromList (fmap (foldDot (readFold (head folds))) coords)) `shouldBe` 17
 
     it "solves Day 13a" $ do
       lines <- readLines "inputs/day13.txt"
-      let coords = map ((\[x,y] -> (x, y)) . readCommaSeparatedInts) (takeWhile (/= "") lines)
+      let coords = map ((\[x, y] -> (x, y)) . readCommaSeparatedInts) (takeWhile (/= "") lines)
       let folds = drop 1 $ dropWhile (/= "") lines
       Set.size (Set.fromList (fmap (foldDot (readFold (head folds))) coords)) `shouldBe` 653
 
     it "solves Day 13b" $ do
       lines <- readLines "inputs/day13.txt"
-      let coords = map ((\[x,y] -> (x, y)) . readCommaSeparatedInts) (takeWhile (/= "") lines)
+      let coords = map ((\[x, y] -> (x, y)) . readCommaSeparatedInts) (takeWhile (/= "") lines)
       let folds = map readFold $ drop 1 $ dropWhile (/= "") lines
       let endDots = Set.fromList $ foldl' (\c f -> fmap (foldDot f) c) coords folds
-      let grid = [ [ if Set.member (x, y) endDots then '#' else ' ' | x <- [0..40] ] | y <- [0..5] ]
+      let grid = [[if Set.member (x, y) endDots then '#' else ' ' | x <- [0 .. 40]] | y <- [0 .. 5]]
       putStrLn $ unlines grid
-
 
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile path
@@ -324,7 +380,7 @@ readCommand :: String -> Maybe (String, Int)
 readCommand s = do
   case words s of
     [c, n] -> (,) c <$> readMaybe n
-    _      -> Nothing
+    _ -> Nothing
 
 readCommaSeparatedInts :: String -> [Int]
 readCommaSeparatedInts = mapMaybe readMaybe . split (dropDelims $ oneOf ",")
@@ -336,7 +392,7 @@ readPoints :: String -> ((Int, Int), (Int, Int))
 readPoints = zipTuple . mapMaybe readMaybe . split (dropDelims $ oneOf ", ->")
   where
     zipTuple (x : y : x' : y' : _) = ((x, y), (x', y'))
-    zipTuple _                     = error "Invalid input"
+    zipTuple _ = error "Invalid input"
 
 readBingoBoards :: [[Int]] -> [([[Int]], [[Int]])]
 readBingoBoards (_ : a : b : c : d : e : rest) = ([a, b, c, d, e], transpose [a, b, c, d, e]) : readBingoBoards rest

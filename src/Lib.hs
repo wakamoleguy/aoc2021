@@ -35,18 +35,20 @@ module Lib
     Cave (..),
     readFold,
     foldDot,
+    countDumboFlashes,
+    findSynchronized,
   )
 where
 
-import           Data.Array      (Array, Ix (inRange), bounds, (!))
-import           Data.Char       (isLower)
-import           Data.Heap       (MaxHeap, empty, insert)
-import           Data.List       (find, foldl', isPrefixOf, sort, transpose)
-import           Data.List.Split (splitOn)
+import Data.Array (Array, Ix (inRange), bounds, elems, (!), (//))
+import Data.Char (isLower)
+import Data.Heap (MaxHeap, empty, insert)
+import Data.List (find, foldl', isPrefixOf, sort, transpose)
+import Data.List.Split (splitOn)
 import qualified Data.Map.Strict as Map
-import           Data.Maybe      (mapMaybe)
-import qualified Data.Set        as Set
-import           Debug.Trace     ()
+import Data.Maybe (mapMaybe)
+import qualified Data.Set as Set
+import Debug.Trace ()
 
 pairs :: [a] -> [(a, a)]
 pairs = zip <*> tail
@@ -73,9 +75,9 @@ countDepthWindowIncreases = length . filter (uncurry (<)) . (zip <*> drop 3)
 
 applySimpleSubmarineCommand :: (String, Int) -> (Int, Int) -> (Int, Int)
 applySimpleSubmarineCommand ("forward", n) (x, y) = (x + n, y)
-applySimpleSubmarineCommand ("down", n) (x, y)    = (x, y + n)
-applySimpleSubmarineCommand ("up", n) (x, y)      = (x, y - n)
-applySimpleSubmarineCommand _ coord               = coord
+applySimpleSubmarineCommand ("down", n) (x, y) = (x, y + n)
+applySimpleSubmarineCommand ("up", n) (x, y) = (x, y - n)
+applySimpleSubmarineCommand _ coord = coord
 
 calculateSimpleCoordinates :: [(String, Int)] -> (Int, Int)
 calculateSimpleCoordinates = foldr applySimpleSubmarineCommand (0, 0)
@@ -84,9 +86,9 @@ calculateSimpleCoordinates = foldr applySimpleSubmarineCommand (0, 0)
 
 applySubmarineCommand :: (Int, Int, Int) -> (String, Int) -> (Int, Int, Int)
 applySubmarineCommand (x, y, a) ("forward", n) = (x + n, y + (a * n), a)
-applySubmarineCommand (x, y, a) ("down", n)    = (x, y, a + n)
-applySubmarineCommand (x, y, a) ("up", n)      = (x, y, a - n)
-applySubmarineCommand coords _                 = coords
+applySubmarineCommand (x, y, a) ("down", n) = (x, y, a + n)
+applySubmarineCommand (x, y, a) ("up", n) = (x, y, a - n)
+applySubmarineCommand coords _ = coords
 
 calculateCoordinates :: [(String, Int)] -> (Int, Int, Int)
 calculateCoordinates = foldl' applySubmarineCommand (0, 0, 0)
@@ -147,7 +149,7 @@ playBingo (n : ns) bs =
   let stampedBoards = map (stamp n) bs
       winningBoard = find isWinner stampedBoards
    in case winningBoard of
-        Just b  -> n * score b
+        Just b -> n * score b
         Nothing -> playBingo ns stampedBoards
 
 stamp :: Int -> BingoBoard -> BingoBoard
@@ -157,11 +159,11 @@ stamp n (rs, cs) = (map f rs, map f cs)
     f = filter (n /=)
 
 isWinner :: BingoBoard -> Bool
-isWinner ([] : rs, cs)    = True
-isWinner (rs, [] : cs)    = True
-isWinner ([], [])         = False
+isWinner ([] : rs, cs) = True
+isWinner (rs, [] : cs) = True
+isWinner ([], []) = False
 isWinner (r : rs, c : cs) = isWinner (rs, cs)
-isWinner _                = error "Invalid board - unequal rows and cols"
+isWinner _ = error "Invalid board - unequal rows and cols"
 
 score :: BingoBoard -> Int
 score = sum . map sum . fst
@@ -174,7 +176,7 @@ loseAtBingo (n : ns) bs@(b : _) =
       losingBoards = filter (not . isWinner) stampedBoards
    in case losingBoards of
         [] -> n * score (head winningBoards)
-        _  -> loseAtBingo ns losingBoards
+        _ -> loseAtBingo ns losingBoards
 loseAtBingo _ _ = error "Invalid game - No boards to play"
 
 --------------------------------------------------------------------------------
@@ -208,7 +210,7 @@ findDangerousPoints = dangerousPoints . concatMap (uncurry pointsBetween)
 
 to9Tuple :: [a] -> (a, a, a, a, a, a, a, a, a)
 to9Tuple [x, y, z, w, a, b, c, d, e] = (x, y, z, w, a, b, c, d, e)
-to9Tuple _                           = error "Invalid tuple"
+to9Tuple _ = error "Invalid tuple"
 
 simulateLanternfish :: [Int] -> Int -> Int
 simulateLanternfish fishes days =
@@ -355,7 +357,7 @@ scoreSyntax (Corrupt ')') = 3
 scoreSyntax (Corrupt ']') = 57
 scoreSyntax (Corrupt '}') = 1197
 scoreSyntax (Corrupt '>') = 25137
-scoreSyntax _             = 0
+scoreSyntax _ = 0
 
 scoreAutocomplete :: SyntaxResult -> Int
 scoreAutocomplete (Incomplete stack) = foldl' (\agg char -> agg * 5 + score char) 0 stack
@@ -364,7 +366,7 @@ scoreAutocomplete (Incomplete stack) = foldl' (\agg char -> agg * 5 + score char
     score ']' = 2
     score '}' = 3
     score '>' = 4
-    score _   = 0
+    score _ = 0
 scoreAutocomplete _ = 0
 
 median :: [Int] -> Int
@@ -374,6 +376,55 @@ median xs =
    in if odd len
         then sorted !! (len `div` 2)
         else (sorted !! (len `div` 2 - 1) + sorted !! (len `div` 2)) `div` 2
+
+--------------------------------------------------------------------------------
+-- Day 11 - Dumbo Octopus
+--------------------------------------------------------------------------------
+
+-- Add 1 to all octopuses
+-- From 0, 0 to max, max
+--  Maybe flash octopus
+--
+-- maybe flash octopus:
+--  if energy < 9, return
+--  return
+
+neighborsWithDiagonals :: Grid -> (Int, Int) -> [(Int, Int)]
+neighborsWithDiagonals grid (x, y) = filter valid $ map addDelta [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+  where
+    addDelta (dx, dy) = (x + dx, y + dy)
+    valid (x, y) = inRange (bounds grid) x && inRange (bounds $ grid ! x) y
+
+setInGrid :: Grid -> (Int, Int) -> Int -> Grid
+setInGrid grid (x, y) val = grid // [(x, grid ! x // [(y, val)])]
+
+flashOctopus :: Grid -> (Int, Int) -> Grid
+flashOctopus grid (x, y)
+  | grid ! x ! y == 0 = grid
+  | grid ! x ! y <= 9 = grid
+  | otherwise =
+    let ns = filter (not . alreadyFlashed) $ neighborsWithDiagonals grid (x, y)
+        alreadyFlashed (x, y) = grid ! x ! y == 0
+        incrementNeighbors = foldl' (\g (x, y) -> setInGrid g (x, y) ((grid ! x ! y) + 1)) grid ns
+     in foldl' flashOctopus (setInGrid incrementNeighbors (x, y) 0) ns
+
+printGrid :: Grid -> String
+printGrid grid = foldl' (\b a -> b ++ a ++ "\n") "" $ fmap (foldl' (\b a -> b ++ show a) "") grid
+
+dumboStep :: Grid -> Grid
+dumboStep grid = grid'
+  where
+    incremented = fmap (fmap (+ 1)) grid
+    grid' = foldl' flashOctopus incremented [(x, y) | x <- [0 .. snd (bounds grid)], y <- [0 .. snd (bounds $ grid ! x)]]
+
+countDumboFlashesInGrid :: Grid -> Int
+countDumboFlashesInGrid = length . filter (== 0) . concatMap elems . elems . dumboStep
+
+countDumboFlashes :: Int -> Grid -> Int
+countDumboFlashes n = sum . map countDumboFlashesInGrid . take n . iterate dumboStep
+
+findSynchronized :: Grid -> Int
+findSynchronized = fst . head . filter (\(_, n) -> n == 100) . zip [1 ..] . map countDumboFlashesInGrid . iterate dumboStep
 
 --------------------------------------------------------------------------------
 -- Day 12 - Passage Pathing
@@ -413,9 +464,9 @@ paths graph =
             unseen = neighbors Set.\\ seen
             seen' = case c of
               Small _ -> Set.insert c seen
-              Big _   -> seen
+              Big _ -> seen
          in concatMap (map (c :) . path' seen') unseen
-  in path' Set.empty (Small "start")
+   in path' Set.empty (Small "start")
 
 pathsDoubleVisit :: Graph -> [[Cave]]
 pathsDoubleVisit graph =
@@ -434,7 +485,7 @@ pathsDoubleVisit graph =
             isDbl' = Set.member c seen
             seen' = Set.insert c seen
          in if isDbl' then [] else concatMap (map (c :) . path' seen' True) neighbors
-  in path' Set.empty False (Small "start")
+   in path' Set.empty False (Small "start")
 
 countPaths :: Graph -> Set.Set Cave -> Bool -> Cave -> Int
 countPaths graph seen allowRepeat start =
@@ -445,7 +496,7 @@ countPaths graph seen allowRepeat start =
         | allowRepeat = countPaths graph seen False c
         | otherwise = 0
       choose c@(Big _) = countPaths graph seen allowRepeat c
-  in foldl' (\sum node -> sum + choose node) 0 $ graphNeighbors graph start
+   in foldl' (\sum node -> sum + choose node) 0 $ graphNeighbors graph start
 
 --------------------------------------------------------------------------------
 -- Day 13 - Transparent Origami
