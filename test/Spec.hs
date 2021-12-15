@@ -4,6 +4,7 @@ import           Day11      (part11a, part11b)
 import           Day12      (part12a, part12b)
 import           Day13      (part13a, part13b)
 import           Day14      (part14a, part14b)
+import           Day15      (part15a, part15b)
 import           Day2       (part2a, part2b)
 import           Day3       (part3a, part3b)
 import           Day4       (part4a, part4b)
@@ -101,3 +102,8 @@ main = hspec $ do
       part14a >>= (`shouldBe` 2768)
     it "solves day14b" $ do
       part14b >>= print
+  describe "Day 15" $ do
+    it "solves day15a" $ do
+      part15a >>= (`shouldBe` 702)
+    it "solves day15b" $ do
+      part15b >>= (`shouldBe` 0)

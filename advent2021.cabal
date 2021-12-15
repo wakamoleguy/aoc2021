@@ -31,6 +31,7 @@ library
       Day12
       Day13
       Day14
+      Day15
       Day2
       Day3
       Day4
@@ -46,10 +47,12 @@ library
       src
   build-depends:
       array
+    , astar
     , base >=4.7 && <5
     , containers
     , heap
     , split
+    , unordered-containers
   default-language: Haskell2010
 
 executable advent2021-exe
@@ -62,10 +65,12 @@ executable advent2021-exe
   build-depends:
       advent2021
     , array
+    , astar
     , base >=4.7 && <5
     , containers
     , heap
     , split
+    , unordered-containers
   default-language: Haskell2010
 
 test-suite advent2021-test
@@ -79,10 +84,12 @@ test-suite advent2021-test
   build-depends:
       advent2021
     , array
+    , astar
     , base >=4.7 && <5
     , containers
     , heap
     , hspec
     , split
     , time
+    , unordered-containers
   default-language: Haskell2010

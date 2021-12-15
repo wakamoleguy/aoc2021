@@ -25,6 +25,11 @@ dependencies:
   - array
   - heap
   - split
+  - astar
+  - unordered-containers
+
+extra-deps:
+  - astar-0.3.0.0
 
 library:
   source-dirs: src
@@ -53,3 +58,5 @@ tests:
       - time
       - split
       - hspec
+    extra-deps:
+      - astar-0.3.0.0
