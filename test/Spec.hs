@@ -21,9 +21,9 @@ main = hspec $ do
 
   describe "Day 16" $ do
     it "solves day16a" $ do
-      part16a >>= print
+      part16a >>= (`shouldBe` 866)
     it "solves day16b" $ do
-      part16b >>= print
+      part16b >>= (`shouldBe` 1392637195518)
 
   describe "Day 1" $ do
     it "solves Day1A" $ do
