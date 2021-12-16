@@ -4,7 +4,6 @@ import           Data.Foldable       (foldl')
 import           Data.List           (group, sort)
 import qualified Data.Map.Strict     as Map
 import           Data.Maybe          (listToMaybe, mapMaybe)
-import           Debug.Trace         (trace)
 import           Util                (readLines)
 
 --------------------------------------------------------------------------------
