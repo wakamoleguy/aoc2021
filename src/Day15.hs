@@ -37,10 +37,11 @@ riskValue grid (i, j) =
         raw = (grid ! (i `mod` width) ! (j `mod` width)) + (i `div` width) + (j `div` width)
       in (raw `mod` 10) + (raw `div` 10)
 
-djikstras :: Grid -> (Int, Int) -> Int
-djikstras grid dest = search HashSet.empty (Heap.singleton (0, (0, 0)))
+djikstras :: Grid -> Int
+djikstras grid = search HashSet.empty (Heap.singleton (0, (0, 0)))
   where
-    value = riskValue grid
+    dest = (snd (bounds grid), snd (bounds grid))
+    value (i, j) = grid ! i ! j
     search :: HashSet.HashSet (Int, Int) -> Heap.MinPrioHeap Int (Int, Int) -> Int
     search visited toBeVisited = case Heap.view toBeVisited of
       Nothing -> maxBound
@@ -56,7 +57,7 @@ djikstras grid dest = search HashSet.empty (Heap.singleton (0, (0, 0)))
                         , (i, j - 1)
                         ]
             neighborNodes = map (\x -> (dist + value x, x)) neighbors
-          in if (i, j) == dest then dist else search visited' (Heap.union rest (Heap.fromList neighborNodes)))
+          in if (i, j) == dest then dist else search visited' (foldr Heap.insert rest neighborNodes))
 
 -- findPath :: Grid -> (Int, Int) -> Int
 -- findPath grid start =
@@ -74,9 +75,14 @@ part15a :: IO Int
 part15a = do
   grid <- input
   let width = snd (bounds grid) + 1
-  return $ djikstras grid (width-1, width-1)
+  return $ djikstras grid
+
+coords :: [[(Int, Int)]]
+coords = [ [ (i, j) | j <- [0..] ] | i <- [0..] ]
+
 part15b :: IO Int
 part15b = do
   grid <- input
   let width = (snd (bounds grid) + 1) * 5
-  return $ djikstras grid (width-1, width-1)
+  let bigGrid = listArray (0, width - 1) $ map (listArray (0, width - 1) . map (riskValue grid)) coords
+  return $ djikstras bigGrid
