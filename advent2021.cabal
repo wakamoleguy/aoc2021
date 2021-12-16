@@ -52,6 +52,7 @@ library
     , base >=4.7 && <5
     , containers
     , heap
+    , mtl
     , split
     , unordered-containers
   default-language: Haskell2010
@@ -70,6 +71,7 @@ executable advent2021-exe
     , base >=4.7 && <5
     , containers
     , heap
+    , mtl
     , split
     , unordered-containers
   default-language: Haskell2010
@@ -90,6 +92,7 @@ test-suite advent2021-test
     , containers
     , heap
     , hspec
+    , mtl
     , split
     , time
     , unordered-containers

@@ -27,6 +27,7 @@ dependencies:
   - split
   - astar
   - unordered-containers
+  - mtl
 
 extra-deps:
   - astar-0.3.0.0
