@@ -1,8 +1,10 @@
 module Day15 (part15a, part15b) where
-import           Data.Array       (Array, bounds, listArray, (!))
+import           Data.Array       (Array, Ix (inRange), bounds, listArray, (!))
 import           Data.Foldable    (toList)
 import           Data.Graph.AStar (aStar)
 import qualified Data.HashSet     as HS
+import qualified Data.HashSet     as HashSet
+import qualified Data.Heap        as Heap
 import           Data.List.Split  (chunksOf)
 import qualified Data.Map.Lazy    as Map
 import qualified Data.Set         as Set
@@ -14,10 +16,10 @@ import           Util             (readLines)
 
 type Grid = Array Int (Array Int Int)
 
-input :: IO [String]
-input = readLines "inputs/day15.txt"
-example :: IO [String]
-example = readLines "inputs/day15-example.txt"
+input :: IO Grid
+input = readGrid <$> readLines "inputs/day15.txt"
+example :: IO Grid
+example = readGrid <$> readLines "inputs/day15-example.txt"
 
 readDigits :: String -> [Int]
 readDigits = map read . chunksOf 1
@@ -35,25 +37,46 @@ riskValue grid (i, j) =
         raw = (grid ! (i `mod` width) ! (j `mod` width)) + (i `div` width) + (j `div` width)
       in (raw `mod` 10) + (raw `div` 10)
 
-findPath :: Grid -> (Int, Int) -> Int
-findPath grid start =
-  let
-    neighbors (i, j) = HS.fromList $ [ (x, y) | (x, y) <- [(i-1, j), (i, j-1), (i+1, j), (i, j+1)], x>=0, y>=0, x <= fst start, y <= snd start]
-    weight _ = riskValue grid
-    heur (i, j) = i + j
-    goal (0, 0) = True
-    goal _      = False
-    path = aStar neighbors weight heur goal start
-    pathSum = sum $ maybe [] (map (riskValue grid)) path
-  in riskValue grid start - riskValue grid (0, 0) + pathSum
+djikstras :: Grid -> (Int, Int) -> Int
+djikstras grid dest = search HashSet.empty (Heap.singleton (0, (0, 0)))
+  where
+    value = riskValue grid
+    search :: HashSet.HashSet (Int, Int) -> Heap.MinPrioHeap Int (Int, Int) -> Int
+    search visited toBeVisited = case Heap.view toBeVisited of
+      Nothing -> maxBound
+      Just ((dist, (i, j)), rest) ->
+        if (i, j) `HashSet.member` visited then search visited rest else (
+          let
+            visited' = HashSet.insert (i, j) visited
+            neighbors = filter (not . (`HashSet.member` visited)) $
+                        filter (inRange ((0, 0), dest))
+                        [ (i + 1, j)
+                        , (i - 1, j)
+                        , (i, j + 1)
+                        , (i, j - 1)
+                        ]
+            neighborNodes = map (\x -> (dist + value x, x)) neighbors
+          in if (i, j) == dest then dist else search visited' (Heap.union rest (Heap.fromList neighborNodes)))
+
+-- findPath :: Grid -> (Int, Int) -> Int
+-- findPath grid start =
+--   let
+--     neighbors (i, j) = HS.fromList $ [ (x, y) | (x, y) <- [(i-1, j), (i, j-1), (i+1, j), (i, j+1)], x>=0, y>=0, x <= fst start, y <= snd start]
+--     weight _ = riskValue grid
+--     heur = const 0
+--     goal (0, 0) = True
+--     goal _      = False
+--     path = aStar neighbors weight heur goal start
+--     pathSum = sum $ maybe [] (map (riskValue grid)) path
+--   in riskValue grid start - riskValue grid (0, 0) + pathSum
 
 part15a :: IO Int
 part15a = do
-  grid <- readGrid <$> input
+  grid <- input
   let width = snd (bounds grid) + 1
-  return $ findPath grid (width-1, width-1)
+  return $ djikstras grid (width-1, width-1)
 part15b :: IO Int
 part15b = do
-  grid <- readGrid <$> input
+  grid <- input
   let width = (snd (bounds grid) + 1) * 5
-  return $ findPath grid (width-1, width-1)
+  return $ djikstras grid (width-1, width-1)
