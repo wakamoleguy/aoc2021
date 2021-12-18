@@ -34,6 +34,7 @@ library
       Day15
       Day16
       Day17
+      Day18
       Day2
       Day3
       Day4
@@ -54,6 +55,7 @@ library
     , containers
     , heap
     , mtl
+    , parsec
     , split
     , unordered-containers
   default-language: Haskell2010
@@ -73,6 +75,7 @@ executable advent2021-exe
     , containers
     , heap
     , mtl
+    , parsec
     , split
     , unordered-containers
   default-language: Haskell2010
@@ -94,6 +97,7 @@ test-suite advent2021-test
     , heap
     , hspec
     , mtl
+    , parsec
     , split
     , time
     , unordered-containers

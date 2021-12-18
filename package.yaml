@@ -28,6 +28,7 @@ dependencies:
   - astar
   - unordered-containers
   - mtl
+  - parsec
 
 extra-deps:
   - astar-0.3.0.0
