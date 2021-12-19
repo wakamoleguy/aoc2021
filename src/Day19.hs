@@ -53,18 +53,17 @@ allPerspectives cs = fmap <$> perspectives <*> pure cs
 
 diff :: Coord -> Coord -> Coord
 diff (x1, y1, z1) (x2, y2, z2) = (x1 - x2, y1 - y2, z1 - z2)
-add :: Coord -> Coord -> Coord
-add (x1, y1, z1) (x2, y2, z2) = (x1 + x2, y1 + y2, z1 + z2)
 
 orientTo :: Scanner -> OrientedScanner -> Maybe OrientedScanner
 orientTo = memo2 orientTo'
   where
     orientTo' unoriented (pos, target) = listToMaybe $ do
+      -- Is there an orientation such that...
       rotated <- unoriented
-      let diffMap = Map.fromListWith (+) [(diff r t, 1 :: Int) | r <- rotated, t <- target]
-      validDiff <- Map.keys $ Map.filter (>= 12) diffMap
-      let shiftedRotated = fmap (`diff` validDiff) rotated
-      return (diff (0, 0, 0) validDiff, shiftedRotated)
+      -- ...at least twelve points map from r to t with the same vector?
+      validDiff <- Map.keys $ Map.filter (>= 12) $ Map.fromListWith (+) [(diff r t, 1) | r <- rotated, t <- target]
+      -- If so, return that orientation, shifted by that vector
+      return (diff (0, 0, 0) validDiff, fmap (`diff` validDiff) rotated)
 
 orientToAny :: Scanner -> [OrientedScanner] -> Maybe OrientedScanner
 orientToAny unoriented targets = listToMaybe $ catMaybes $ orientTo unoriented <$> targets

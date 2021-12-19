@@ -21,11 +21,11 @@ import           Test.Hspec (describe, hspec, it, shouldBe)
 
 main :: IO ()
 main = hspec $ do
-  describe "Day 19" $ do
-    it "solves day19a" $ do
-      part19a >>= (`shouldBe` 376)
-    it "solves day19b" $ do
-      part19b >>= (`shouldBe` 10772)
+  -- describe "Day 19" $ do
+  --   it "solves day19a" $ do
+  --     part19a >>= (`shouldBe` 376)
+  --   it "solves day19b" $ do
+  --     part19b >>= (`shouldBe` 10772)
 
   -- describe "Day 18" $ do
   --   it "solves day18a" $ do
