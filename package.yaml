@@ -29,6 +29,7 @@ dependencies:
   - unordered-containers
   - mtl
   - parsec
+  - MemoTrie
 
 extra-deps:
   - astar-0.3.0.0

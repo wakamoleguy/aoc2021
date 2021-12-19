@@ -1,13 +1,20 @@
 module Day19 (part19a, part19b) where
-import           Data.List.Split (splitWhen)
-import           Data.Maybe      (catMaybes, listToMaybe)
-import qualified Data.Set        as Set
-import           Util            (readCommaSeparatedInts, readLines)
+import           Data.List          (group, sort)
+import           Data.List.NonEmpty (groupWith)
+import           Data.List.Split    (splitWhen)
+import qualified Data.Map.Strict    as Map
+import           Data.Maybe         (catMaybes, listToMaybe)
+import           Data.MemoTrie      (memo2)
+import qualified Data.Set           as Set
+import           Debug.Trace
+import           Util               (readCommaSeparatedInts, readLines)
 --------------------------------------------------------------------------------
 -- Day 19 - Beacon Scanner
 --------------------------------------------------------------------------------
 type Coord = (Int, Int, Int)
-type CoordSet = Set.Set Coord
+type CoordSet = [Coord]
+type Scanner = [CoordSet]
+type OrientedScanner = (Coord, CoordSet)
 
 -- Input parsing
 input :: IO [String]
@@ -20,7 +27,7 @@ listToCoord _         = error "listToCoord: invalid input"
 parsedScannerCoords :: [String] -> [CoordSet]
 parsedScannerCoords = map parseSingleScanner . splitWhen (== "")
   where
-    parseSingleScanner = Set.fromList . map (listToCoord . readCommaSeparatedInts) . tail
+    parseSingleScanner = map (listToCoord . readCommaSeparatedInts) . tail
 
 -- Generate rotations and perspectives
 rotations :: [Coord -> Coord]
@@ -41,40 +48,43 @@ turns = [ \(x, y, z) -> (x, y, z)
 perspectives :: [Coord -> Coord]
 perspectives = (.) <$> turns <*> rotations
 
--- Rotate the first set until it overlaps with the second, then return the result
--- If not overlap is found, return Nothing
-orientTo :: CoordSet -> ((Int, Int, Int), CoordSet) -> Maybe ((Int, Int, Int), CoordSet)
-orientTo unoriented ((dtx, dty, dtz), target) = listToMaybe $ catMaybes $ do
-  perspective <- perspectives
-  let rotated = Set.map perspective unoriented
-  (tdx, tdy, tdz) <- Set.toList target
-  (rdx, rdy, rdz) <- Set.toList rotated
-  let (dx, dy, dz) = (rdx - tdx, rdy - tdy, rdz - tdz)
-  let shiftedRotated = Set.map (\(x, y, z) -> (x - dx, y - dy, z - dz)) rotated
-  let sizeOfIntersection = Set.size $ Set.intersection shiftedRotated target
-  if sizeOfIntersection >= 12
-    then return (Just ((-dx, -dy, -dz), shiftedRotated))
-    else return Nothing
+allPerspectives :: CoordSet -> Scanner
+allPerspectives cs = fmap <$> perspectives <*> pure cs
 
-orientToAny :: CoordSet -> [((Int, Int, Int), CoordSet)] -> Maybe ((Int, Int, Int), CoordSet)
+diff :: Coord -> Coord -> Coord
+diff (x1, y1, z1) (x2, y2, z2) = (x1 - x2, y1 - y2, z1 - z2)
+add :: Coord -> Coord -> Coord
+add (x1, y1, z1) (x2, y2, z2) = (x1 + x2, y1 + y2, z1 + z2)
+
+orientTo :: Scanner -> OrientedScanner -> Maybe OrientedScanner
+orientTo = memo2 orientTo'
+  where
+    orientTo' unoriented (pos, target) = listToMaybe $ do
+      rotated <- unoriented
+      let diffMap = Map.fromListWith (+) [(diff r t, 1 :: Int) | r <- rotated, t <- target]
+      validDiff <- Map.keys $ Map.filter (>= 12) diffMap
+      let shiftedRotated = fmap (`diff` validDiff) rotated
+      return (diff (0, 0, 0) validDiff, shiftedRotated)
+
+orientToAny :: Scanner -> [OrientedScanner] -> Maybe OrientedScanner
 orientToAny unoriented targets = listToMaybe $ catMaybes $ orientTo unoriented <$> targets
 
-orientAll :: [((Int, Int, Int), CoordSet)] -> [CoordSet] -> [((Int, Int, Int), CoordSet)]
+orientAll :: [OrientedScanner] -> [Scanner] -> [OrientedScanner]
 orientAll oriented [] = oriented
-orientAll oriented unoriented =
-  let next = head unoriented
-  in case orientToAny next oriented of
-    Nothing           -> orientAll oriented (tail unoriented ++ [next]) -- Try later
-    Just nextOriented -> orientAll (nextOriented : oriented) (tail unoriented)
+orientAll oriented (u:us) =
+  case orientToAny u oriented of
+    Nothing           -> orientAll oriented (us ++ [u]) -- Try later
+    Just nextOriented -> orientAll (nextOriented : oriented) us
 
-
-mappedScanners :: IO [((Int, Int, Int), CoordSet)]
+mappedScanners :: IO [OrientedScanner]
 mappedScanners = do
-  scanners <- parsedScannerCoords <$> input
-  return $ orientAll [((0, 0, 0), head scanners)] (tail scanners)
+  parsed <- parsedScannerCoords <$> input
+  let original = head parsed
+  let scanners = map allPerspectives $ tail parsed
+  return $ orientAll [((0, 0, 0), original)] scanners
 
 part19a :: IO Int
-part19a = Set.size . Set.unions . map snd <$> mappedScanners
+part19a = length . map head . group . sort. concatMap snd <$> mappedScanners
 
 manhattanDistance :: Coord -> Coord -> Int
 manhattanDistance (x1, y1, z1) (x2, y2, z2) = abs (x1 - x2) + abs (y1 - y2) + abs (z1 - z2)

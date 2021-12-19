@@ -50,7 +50,8 @@ library
   hs-source-dirs:
       src
   build-depends:
-      array
+      MemoTrie
+    , array
     , astar
     , base >=4.7 && <5
     , containers
@@ -69,7 +70,8 @@ executable advent2021-exe
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      advent2021
+      MemoTrie
+    , advent2021
     , array
     , astar
     , base >=4.7 && <5
@@ -90,7 +92,8 @@ test-suite advent2021-test
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      advent2021
+      MemoTrie
+    , advent2021
     , array
     , astar
     , base >=4.7 && <5
