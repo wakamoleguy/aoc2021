@@ -21,29 +21,29 @@ import           Test.Hspec (describe, hspec, it, shouldBe)
 
 main :: IO ()
 main = hspec $ do
-  describe "Day 19" $ do
-    it "solves day19a" $ do
-      part19a >>= (`shouldBe` 376)
-    it "solves day19b" $ do
-      part19b >>= (`shouldBe` 10772)
+  -- describe "Day 19" $ do
+  --   it "solves day19a" $ do
+  --     part19a >>= (`shouldBe` 376)
+  --   it "solves day19b" $ do
+  --     part19b >>= (`shouldBe` 10772)
 
-  describe "Day 18" $ do
-    it "solves day18a" $ do
-      part18a >>= (`shouldBe` 2501)
-    it "solves day18b" $ do
-      part18b >>= (`shouldBe` 4935)
+  -- describe "Day 18" $ do
+  --   it "solves day18a" $ do
+  --     part18a >>= (`shouldBe` 2501)
+  --   it "solves day18b" $ do
+  --     part18b >>= (`shouldBe` 4935)
 
-  describe "Day 17" $ do
-    it "solves day17a" $ do
-      part17a >>= (`shouldBe` 5778)
-    it "solves day17b" $ do
-      part17b >>= (`shouldBe` 2576)
+  -- describe "Day 17" $ do
+  --   it "solves day17a" $ do
+  --     part17a >>= (`shouldBe` 5778)
+  --   it "solves day17b" $ do
+  --     part17b >>= (`shouldBe` 2576)
 
-  describe "Day 16" $ do
-    it "solves day16a" $ do
-      part16a >>= (`shouldBe` 866)
-    it "solves day16b" $ do
-      part16b >>= (`shouldBe` 1392637195518)
+  -- describe "Day 16" $ do
+  --   it "solves day16a" $ do
+  --     part16a >>= (`shouldBe` 866)
+  --   it "solves day16b" $ do
+  --     part16b >>= (`shouldBe` 1392637195518)
 
   describe "Day 1" $ do
     it "solves Day1A" $ do
