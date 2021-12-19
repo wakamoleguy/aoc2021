@@ -1,19 +1,19 @@
 module Day19 (part19a, part19b) where
-import           Data.List          (group, sort)
-import           Data.List.NonEmpty (groupWith)
-import           Data.List.Split    (splitWhen)
-import qualified Data.Map.Strict    as Map
-import           Data.Maybe         (catMaybes, listToMaybe)
-import           Data.MemoTrie      (memo2)
-import qualified Data.Set           as Set
+import qualified Data.HashMap.Strict as HashMap
+import           Data.List           (group, sort)
+import           Data.List.NonEmpty  (groupWith)
+import           Data.List.Split     (splitWhen)
+import           Data.Maybe          (catMaybes, listToMaybe)
+import           Data.MemoTrie       (memo2)
+import qualified Data.Set            as Set
 import           Debug.Trace
-import           Util               (readCommaSeparatedInts, readLines)
+import           Util                (readCommaSeparatedInts, readLines)
 --------------------------------------------------------------------------------
 -- Day 19 - Beacon Scanner
 --------------------------------------------------------------------------------
 type Coord = (Int, Int, Int)
 type CoordSet = [Coord]
-type Scanner = [CoordSet]
+type Scanner = CoordSet
 type OrientedScanner = (Coord, CoordSet)
 
 -- Input parsing
@@ -48,20 +48,23 @@ turns = [ \(x, y, z) -> (x, y, z)
 perspectives :: [Coord -> Coord]
 perspectives = (.) <$> turns <*> rotations
 
-allPerspectives :: CoordSet -> Scanner
+allPerspectives :: CoordSet -> [CoordSet]
 allPerspectives cs = fmap <$> perspectives <*> pure cs
 
 diff :: Coord -> Coord -> Coord
 diff (x1, y1, z1) (x2, y2, z2) = (x1 - x2, y1 - y2, z1 - z2)
+
+calculateDiffs :: CoordSet -> CoordSet -> [Coord]
+calculateDiffs rotated target = HashMap.keys $ HashMap.filter (>= 12) $ HashMap.fromListWith (+) [(diff r t, 1) | r <- rotated, t <- target]
 
 orientTo :: Scanner -> OrientedScanner -> Maybe OrientedScanner
 orientTo = memo2 orientTo'
   where
     orientTo' unoriented (pos, target) = listToMaybe $ do
       -- Is there an orientation such that...
-      rotated <- unoriented
+      rotated <- allPerspectives unoriented
       -- ...at least twelve points map from r to t with the same vector?
-      validDiff <- Map.keys $ Map.filter (>= 12) $ Map.fromListWith (+) [(diff r t, 1) | r <- rotated, t <- target]
+      validDiff <- calculateDiffs rotated target
       -- If so, return that orientation, shifted by that vector
       return (diff (0, 0, 0) validDiff, fmap (`diff` validDiff) rotated)
 
@@ -78,9 +81,7 @@ orientAll oriented (u:us) =
 mappedScanners :: IO [OrientedScanner]
 mappedScanners = do
   parsed <- parsedScannerCoords <$> input
-  let original = head parsed
-  let scanners = map allPerspectives $ tail parsed
-  return $ orientAll [((0, 0, 0), original)] scanners
+  return $ orientAll [((0, 0, 0), head parsed)] (tail parsed)
 
 part19a :: IO Int
 part19a = length . map head . group . sort. concatMap snd <$> mappedScanners
