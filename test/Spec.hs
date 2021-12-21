@@ -11,6 +11,7 @@ import           Day18      (part18a, part18b)
 import           Day19      (part19a, part19b)
 import           Day2       (part2a, part2b)
 import           Day20      (part20a, part20b)
+import           Day21      (part21a, part21b)
 import           Day3       (part3a, part3b)
 import           Day4       (part4a, part4b)
 import           Day5       (part5a, part5b)
@@ -23,11 +24,16 @@ import           Test.Hspec (describe, hspec, it, shouldBe)
 main :: IO ()
 main = hspec $ do
 
-  describe "Day 20" $ do
-    it "solves day20a" $ do
-      part20a >>= (`shouldBe` 4964)
-    it "solves day20b" $ do
-      part20b >>= (`shouldBe` 13202)
+  describe "Day 21" $ do
+    it "solves day21a" $ do
+      part21a >>= (`shouldBe` 888735)
+    it "solves day21b" $ do
+      part21b >>= (`shouldBe` 647608359455719)
+  -- describe "Day 20" $ do
+  --   it "solves day20a" $ do
+  --     part20a >>= (`shouldBe` 4964)
+  --   it "solves day20b" $ do
+  --     part20b >>= (`shouldBe` 13202)
 
   -- describe "Day 19" $ do
   --   it "solves day19a" $ do
