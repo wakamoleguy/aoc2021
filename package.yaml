@@ -30,6 +30,7 @@ dependencies:
   - mtl
   - parsec
   - MemoTrie
+  - hashable
 
 extra-deps:
   - astar-0.3.0.0

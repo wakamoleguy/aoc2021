@@ -40,6 +40,7 @@ library
       Day20
       Day21
       Day22
+      Day23
       Day3
       Day4
       Day5
@@ -58,6 +59,7 @@ library
     , astar
     , base >=4.7 && <5
     , containers
+    , hashable
     , heap
     , mtl
     , parsec
@@ -79,6 +81,7 @@ executable advent2021-exe
     , astar
     , base >=4.7 && <5
     , containers
+    , hashable
     , heap
     , mtl
     , parsec
@@ -101,6 +104,7 @@ test-suite advent2021-test
     , astar
     , base >=4.7 && <5
     , containers
+    , hashable
     , heap
     , hspec
     , mtl
