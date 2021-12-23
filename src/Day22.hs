@@ -73,7 +73,8 @@ setBit cubes p = fromMaybe False $ listToMaybe $ mapMaybe (maybeSet p) rcubes
 part22a :: IO Int
 part22a = do
   cubes <- initializationCubes <$> parseInput
-  return $ length $ filter id $ map (setBit cubes) $ [(x, y, z) | x <- [-500..50], y <- [-50..50], z <- [-50..50]]
+  let overlaid = foldl' go [] cubes
+  return $ sum $ map volume $ filter isOn overlaid
 
 -- Part 2
 isEntirelyWithin :: Cube -> Cube -> Bool
