@@ -28,9 +28,9 @@ main = hspec $ do
 
   describe "Day 23" $ do
     it "solves day23a" $ do
-      part23a >>= (`shouldBe` "15472")
+      part23a >>= (`shouldBe` 15472)
     it "solves day23b" $ do
-      part23b >>= (`shouldBe` [])
+      part23b >>= (`shouldBe` 46182)
 
   describe "Day 22" $ do
     it "solves day22a" $ do

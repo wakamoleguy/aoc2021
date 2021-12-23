@@ -45,10 +45,10 @@ example = G
   , h5 = Nothing
   , h6 = Nothing
   , h7 = Nothing
-  , rooma = [Bronze, Amber]
-  , roomb = [Copper, Desert]
-  , roomc = [Bronze, Copper]
-  , roomd = [Desert, Amber] }
+  , rooma = [Bronze, Amber, Amber, Amber]
+  , roomb = [Copper, Desert, Bronze, Bronze]
+  , roomc = [Bronze, Copper, Copper, Copper]
+  , roomd = [Desert, Amber, Desert, Desert] }
 
 input :: Game
 input = G
@@ -59,10 +59,10 @@ input = G
   , h5 = Nothing
   , h6 = Nothing
   , h7 = Nothing
-  , rooma = [Desert, Copper]
-  , roomb = [Bronze, Copper]
-  , roomc = [Bronze, Desert]
-  , roomd = [Amber, Amber] }
+  , rooma = [Desert, Copper, Amber, Amber]
+  , roomb = [Bronze, Copper, Bronze, Bronze]
+  , roomc = [Bronze, Desert, Copper, Copper]
+  , roomd = [Amber, Amber, Desert, Desert] }
 
 amphipodWeight :: Amphipod -> Int
 amphipodWeight Amber  = 1
@@ -78,13 +78,13 @@ moveFromA g =
     (a:rest) = as
     gone = g{rooma = rest}
     moves = catMaybes [
-      if isNothing (h1 g) && isNothing (h2 g) then Just (gone{h1 = Just a}, 5 - length as) else Nothing,
-      if isNothing (h2 g) then Just (gone{h2 = Just a}, 4 - length as) else Nothing,
-      if isNothing (h3 g) then Just (gone{h3 = Just a}, 4 - length as) else Nothing,
-      if isNothing (h3 g) && isNothing (h4 g) then Just (gone{h4 = Just a}, 6 - length as) else Nothing,
-      if isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g) then Just (gone{h5 = Just a}, 8 - length as) else Nothing,
-      if isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g) && isNothing (h6 g) then Just (gone{h6 = Just a}, 10 - length as) else Nothing,
-      if isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g) && isNothing (h6 g) && isNothing (h7 g) then Just (gone{h7 = Just a}, 11 - length as) else Nothing ]
+      if isNothing (h1 g) && isNothing (h2 g) then Just (gone{h1 = Just a}, 7 - length as) else Nothing,
+      if isNothing (h2 g) then Just (gone{h2 = Just a}, 6 - length as) else Nothing,
+      if isNothing (h3 g) then Just (gone{h3 = Just a}, 6 - length as) else Nothing,
+      if isNothing (h3 g) && isNothing (h4 g) then Just (gone{h4 = Just a}, 8 - length as) else Nothing,
+      if isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g) then Just (gone{h5 = Just a}, 10 - length as) else Nothing,
+      if isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g) && isNothing (h6 g) then Just (gone{h6 = Just a}, 12 - length as) else Nothing,
+      if isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g) && isNothing (h6 g) && isNothing (h7 g) then Just (gone{h7 = Just a}, 13 - length as) else Nothing ]
   in if anyNotHome then fmap (fmap (* amphipodWeight a)) moves else []
 
 moveFromB :: Game -> [(Game, Int)]
@@ -95,13 +95,13 @@ moveFromB g =
     (a:rest) = as
     gone = g{roomb = rest}
     moves = catMaybes [
-      if isNothing (h1 g) && isNothing (h2 g) && isNothing (h3 g) then Just (gone{h1 = Just a}, 7 - length as) else Nothing,
-      if isNothing (h2 g) && isNothing (h3 g) then Just (gone{h2 = Just a}, 6 - length as) else Nothing,
-      if isNothing (h3 g) then Just (gone{h3 = Just a}, 4 - length as) else Nothing,
-      if isNothing (h4 g) then Just (gone{h4 = Just a}, 4 - length as) else Nothing,
-      if isNothing (h4 g) && isNothing (h5 g) then Just (gone{h5 = Just a}, 6 - length as) else Nothing,
-      if isNothing (h4 g) && isNothing (h5 g) && isNothing (h6 g) then Just (gone{h6 = Just a}, 8 - length as) else Nothing,
-      if isNothing (h4 g) && isNothing (h5 g) && isNothing (h6 g) && isNothing (h7 g) then Just (gone{h7 = Just a}, 9 - length as) else Nothing ]
+      if isNothing (h1 g) && isNothing (h2 g) && isNothing (h3 g) then Just (gone{h1 = Just a}, 9 - length as) else Nothing,
+      if isNothing (h2 g) && isNothing (h3 g) then Just (gone{h2 = Just a}, 8 - length as) else Nothing,
+      if isNothing (h3 g) then Just (gone{h3 = Just a}, 6 - length as) else Nothing,
+      if isNothing (h4 g) then Just (gone{h4 = Just a}, 6 - length as) else Nothing,
+      if isNothing (h4 g) && isNothing (h5 g) then Just (gone{h5 = Just a}, 8 - length as) else Nothing,
+      if isNothing (h4 g) && isNothing (h5 g) && isNothing (h6 g) then Just (gone{h6 = Just a}, 10 - length as) else Nothing,
+      if isNothing (h4 g) && isNothing (h5 g) && isNothing (h6 g) && isNothing (h7 g) then Just (gone{h7 = Just a}, 11 - length as) else Nothing ]
   in if anyNotHome then fmap (fmap (* amphipodWeight a)) moves else []
 
 moveFromC :: Game -> [(Game, Int)]
@@ -112,13 +112,13 @@ moveFromC g =
     (a:rest) = as
     gone = g{roomc = rest}
     moves = catMaybes [
-      if isNothing (h1 g) && isNothing (h2 g) && isNothing (h3 g) && isNothing (h4 g) then Just (gone{h1 = Just a}, 9 - length as) else Nothing,
-      if isNothing (h2 g) && isNothing (h3 g) && isNothing (h4 g) then Just (gone{h2 = Just a}, 8 - length as) else Nothing,
-      if isNothing (h3 g) && isNothing (h4 g) then Just (gone{h3 = Just a}, 6 - length as) else Nothing,
-      if isNothing (h4 g) then Just (gone{h4 = Just a}, 4 - length as) else Nothing,
-      if isNothing (h5 g) then Just (gone{h5 = Just a}, 4 - length as) else Nothing,
-      if isNothing (h5 g) && isNothing (h6 g) then Just (gone{h6 = Just a}, 6 - length as) else Nothing,
-      if isNothing (h5 g) && isNothing (h6 g) && isNothing (h7 g) then Just (gone{h7 = Just a}, 7 - length as) else Nothing ]
+      if isNothing (h1 g) && isNothing (h2 g) && isNothing (h3 g) && isNothing (h4 g) then Just (gone{h1 = Just a}, 11 - length as) else Nothing,
+      if isNothing (h2 g) && isNothing (h3 g) && isNothing (h4 g) then Just (gone{h2 = Just a}, 10 - length as) else Nothing,
+      if isNothing (h3 g) && isNothing (h4 g) then Just (gone{h3 = Just a}, 8 - length as) else Nothing,
+      if isNothing (h4 g) then Just (gone{h4 = Just a}, 6 - length as) else Nothing,
+      if isNothing (h5 g) then Just (gone{h5 = Just a}, 6 - length as) else Nothing,
+      if isNothing (h5 g) && isNothing (h6 g) then Just (gone{h6 = Just a}, 8 - length as) else Nothing,
+      if isNothing (h5 g) && isNothing (h6 g) && isNothing (h7 g) then Just (gone{h7 = Just a}, 9 - length as) else Nothing ]
   in if anyNotHome then fmap (fmap (* amphipodWeight a)) moves else []
 
 moveFromD :: Game -> [(Game, Int)]
@@ -129,13 +129,13 @@ moveFromD g =
     (a:rest) = as
     gone = g{roomd = rest}
     moves = catMaybes [
-      if isNothing (h1 g) && isNothing (h2 g) && isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g) then Just (gone{h1 = Just a}, 11 - length as) else Nothing,
-      if isNothing (h2 g) && isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g) then Just (gone{h2 = Just a}, 10 - length as) else Nothing,
-      if isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g)  then Just (gone{h3 = Just a}, 8 - length as) else Nothing,
-      if isNothing (h4 g) && isNothing (h5 g)  then Just (gone{h4 = Just a}, 6 - length as) else Nothing,
-      if isNothing (h5 g) then Just (gone{h5 = Just a}, 4 - length as) else Nothing,
-      if isNothing (h6 g) then Just (gone{h6 = Just a}, 4 - length as) else Nothing,
-      if isNothing (h6 g) && isNothing (h7 g) then Just (gone{h7 = Just a}, 5 - length as) else Nothing ]
+      if isNothing (h1 g) && isNothing (h2 g) && isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g) then Just (gone{h1 = Just a}, 13 - length as) else Nothing,
+      if isNothing (h2 g) && isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g) then Just (gone{h2 = Just a}, 12 - length as) else Nothing,
+      if isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g)  then Just (gone{h3 = Just a}, 10 - length as) else Nothing,
+      if isNothing (h4 g) && isNothing (h5 g)  then Just (gone{h4 = Just a}, 8 - length as) else Nothing,
+      if isNothing (h5 g) then Just (gone{h5 = Just a}, 6 - length as) else Nothing,
+      if isNothing (h6 g) then Just (gone{h6 = Just a}, 6 - length as) else Nothing,
+      if isNothing (h6 g) && isNothing (h7 g) then Just (gone{h7 = Just a}, 7 - length as) else Nothing ]
   in if anyNotHome then fmap (fmap (* amphipodWeight a)) moves else []
 
 outMoves :: Game -> [(Game, Int)]
@@ -145,70 +145,70 @@ moveFrom1 :: Game -> Maybe (Game, Int)
 moveFrom1 g@G{h1=Just a, h2=Nothing} =
   let gone = g{h1=Nothing}
   in case a of
-    Amber -> if all (== Amber) (rooma g) then Just (gone{rooma=Amber:rooma g}, 4 - length (rooma g)) else Nothing
-    Bronze -> if isNothing (h3 g) && all (== Bronze) (roomb g) then Just (gone{roomb=Bronze:roomb g}, 10 * (6 - length (roomb g))) else Nothing
-    Copper -> if isNothing (h3 g) && isNothing (h4 g) && all (== Copper) (roomc g) then Just (gone{roomc=Copper:roomc g}, 100 * (8 - length (roomc g))) else Nothing
-    Desert -> if isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g) && all (== Desert) (roomd g) then Just (gone{roomd=Desert:roomd g}, 1000 * (10 - length (roomd g))) else Nothing
+    Amber -> if all (== Amber) (rooma g) then Just (gone{rooma=Amber:rooma g}, 6 - length (rooma g)) else Nothing
+    Bronze -> if isNothing (h3 g) && all (== Bronze) (roomb g) then Just (gone{roomb=Bronze:roomb g}, 10 * (8 - length (roomb g))) else Nothing
+    Copper -> if isNothing (h3 g) && isNothing (h4 g) && all (== Copper) (roomc g) then Just (gone{roomc=Copper:roomc g}, 100 * (10 - length (roomc g))) else Nothing
+    Desert -> if isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g) && all (== Desert) (roomd g) then Just (gone{roomd=Desert:roomd g}, 1000 * (12 - length (roomd g))) else Nothing
 moveFrom1 _ = Nothing
 
 moveFrom2 :: Game -> Maybe (Game, Int)
 moveFrom2 g@G{h2=Just a} =
   let gone = g{h2=Nothing}
   in case a of
-    Amber -> if all (== Amber) (rooma g) then Just (gone{rooma=Amber:rooma g}, 3 - length (rooma g)) else Nothing
-    Bronze -> if isNothing (h3 g) && all (== Bronze) (roomb g) then Just (gone{roomb=Bronze:roomb g}, 10 * (5 - length (roomb g))) else Nothing
-    Copper -> if isNothing (h3 g) && isNothing (h4 g) && all (== Copper) (roomc g) then Just (gone{roomc=Copper:roomc g}, 100 * (7 - length (roomc g))) else Nothing
-    Desert -> if isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g) && all (== Desert) (roomd g) then Just (gone{roomd=Desert:roomd g}, 1000 * (9 - length (roomd g))) else Nothing
+    Amber -> if all (== Amber) (rooma g) then Just (gone{rooma=Amber:rooma g}, 5 - length (rooma g)) else Nothing
+    Bronze -> if isNothing (h3 g) && all (== Bronze) (roomb g) then Just (gone{roomb=Bronze:roomb g}, 10 * (7 - length (roomb g))) else Nothing
+    Copper -> if isNothing (h3 g) && isNothing (h4 g) && all (== Copper) (roomc g) then Just (gone{roomc=Copper:roomc g}, 100 * (9 - length (roomc g))) else Nothing
+    Desert -> if isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g) && all (== Desert) (roomd g) then Just (gone{roomd=Desert:roomd g}, 1000 * (11 - length (roomd g))) else Nothing
 moveFrom2 _ = Nothing
 
 moveFrom3 :: Game -> Maybe (Game, Int)
 moveFrom3 g@G{h3=Just a} =
   let gone = g{h3=Nothing}
   in case a of
-    Amber -> if all (== Amber) (rooma g) then Just (gone{rooma=Amber:rooma g}, 3 - length (rooma g)) else Nothing
-    Bronze -> if all (== Bronze) (roomb g) then Just (gone{roomb=Bronze:roomb g}, 10 * (3 - length (roomb g))) else Nothing
-    Copper -> if isNothing (h4 g) && all (== Copper) (roomc g) then Just (gone{roomc=Copper:roomc g}, 100 * (5 - length (roomc g))) else Nothing
-    Desert -> if isNothing (h4 g) && isNothing (h5 g) && all (== Desert) (roomd g) then Just (gone{roomd=Desert:roomd g}, 1000 * (7 - length (roomd g))) else Nothing
+    Amber -> if all (== Amber) (rooma g) then Just (gone{rooma=Amber:rooma g}, 5 - length (rooma g)) else Nothing
+    Bronze -> if all (== Bronze) (roomb g) then Just (gone{roomb=Bronze:roomb g}, 10 * (5 - length (roomb g))) else Nothing
+    Copper -> if isNothing (h4 g) && all (== Copper) (roomc g) then Just (gone{roomc=Copper:roomc g}, 100 * (7 - length (roomc g))) else Nothing
+    Desert -> if isNothing (h4 g) && isNothing (h5 g) && all (== Desert) (roomd g) then Just (gone{roomd=Desert:roomd g}, 1000 * (9 - length (roomd g))) else Nothing
 moveFrom3 _ = Nothing
 
 moveFrom4 :: Game -> Maybe (Game, Int)
 moveFrom4 g@G{h4=Just a} =
   let gone = g{h4=Nothing}
   in case a of
-    Amber -> if isNothing (h3 g) && all (== Amber) (rooma g) then Just (gone{rooma=Amber:rooma g}, 5 - length (rooma g)) else Nothing
-    Bronze -> if all (== Bronze) (roomb g) then Just (gone{roomb=Bronze:roomb g}, 10 * (3 - length (roomb g))) else Nothing
-    Copper -> if all (== Copper) (roomc g) then Just (gone{roomc=Copper:roomc g}, 100 * (3 - length (roomc g))) else Nothing
-    Desert -> if isNothing (h5 g) && all (== Desert) (roomd g) then Just (gone{roomd=Desert:roomd g}, 1000 * (5 - length (roomd g))) else Nothing
+    Amber -> if isNothing (h3 g) && all (== Amber) (rooma g) then Just (gone{rooma=Amber:rooma g}, 7 - length (rooma g)) else Nothing
+    Bronze -> if all (== Bronze) (roomb g) then Just (gone{roomb=Bronze:roomb g}, 10 * (5 - length (roomb g))) else Nothing
+    Copper -> if all (== Copper) (roomc g) then Just (gone{roomc=Copper:roomc g}, 100 * (5 - length (roomc g))) else Nothing
+    Desert -> if isNothing (h5 g) && all (== Desert) (roomd g) then Just (gone{roomd=Desert:roomd g}, 1000 * (7 - length (roomd g))) else Nothing
 moveFrom4 _ = Nothing
 
 moveFrom5 :: Game -> Maybe (Game, Int)
 moveFrom5 g@G{h5=Just a} =
   let gone = g{h5=Nothing}
   in case a of
-    Amber -> if isNothing (h3 g) && isNothing (h4 g) && all (== Amber) (rooma g) then Just (gone{rooma=Amber:rooma g}, 7 - length (rooma g)) else Nothing
-    Bronze -> if isNothing (h4 g) && all (== Bronze) (roomb g) then Just (gone{roomb=Bronze:roomb g}, 10 * (5 - length (roomb g))) else Nothing
-    Copper -> if all (== Copper) (roomc g) then Just (gone{roomc=Copper:roomc g}, 100 * (3 - length (roomc g))) else Nothing
-    Desert -> if all (== Desert) (roomd g) then Just (gone{roomd=Desert:roomd g}, 1000 * (3 - length (roomd g))) else Nothing
+    Amber -> if isNothing (h3 g) && isNothing (h4 g) && all (== Amber) (rooma g) then Just (gone{rooma=Amber:rooma g}, 9 - length (rooma g)) else Nothing
+    Bronze -> if isNothing (h4 g) && all (== Bronze) (roomb g) then Just (gone{roomb=Bronze:roomb g}, 10 * (7 - length (roomb g))) else Nothing
+    Copper -> if all (== Copper) (roomc g) then Just (gone{roomc=Copper:roomc g}, 100 * (5 - length (roomc g))) else Nothing
+    Desert -> if all (== Desert) (roomd g) then Just (gone{roomd=Desert:roomd g}, 1000 * (5 - length (roomd g))) else Nothing
 moveFrom5 _ = Nothing
 
 moveFrom6 :: Game -> Maybe (Game, Int)
 moveFrom6 g@G{h6=Just a} =
   let gone = g{h6=Nothing}
   in case a of
-    Amber -> if isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g) && all (== Amber) (rooma g) then Just (gone{rooma=Amber:rooma g}, 9 - length (rooma g)) else Nothing
-    Bronze -> if isNothing (h4 g) && isNothing (h5 g) && all (== Bronze) (roomb g) then Just (gone{roomb=Bronze:roomb g}, 10 * (7 - length (roomb g))) else Nothing
-    Copper -> if isNothing (h5 g) && all (== Copper) (roomc g) then Just (gone{roomc=Copper:roomc g}, 100 * (5 - length (roomc g))) else Nothing
-    Desert -> if all (== Desert) (roomd g) then Just (gone{roomd=Desert:roomd g}, 1000 * (3 - length (roomd g))) else Nothing
+    Amber -> if isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g) && all (== Amber) (rooma g) then Just (gone{rooma=Amber:rooma g}, 11 - length (rooma g)) else Nothing
+    Bronze -> if isNothing (h4 g) && isNothing (h5 g) && all (== Bronze) (roomb g) then Just (gone{roomb=Bronze:roomb g}, 10 * (9 - length (roomb g))) else Nothing
+    Copper -> if isNothing (h5 g) && all (== Copper) (roomc g) then Just (gone{roomc=Copper:roomc g}, 100 * (7 - length (roomc g))) else Nothing
+    Desert -> if all (== Desert) (roomd g) then Just (gone{roomd=Desert:roomd g}, 1000 * (5 - length (roomd g))) else Nothing
 moveFrom6 _ = Nothing
 
 moveFrom7 :: Game -> Maybe (Game, Int)
 moveFrom7 g@G{h7=Just a, h6=Nothing} =
   let gone = g{h7=Nothing}
   in case a of
-    Amber -> if isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g) && all (== Amber) (rooma g) then Just (gone{rooma=Amber:rooma g}, 10 - length (rooma g)) else Nothing
-    Bronze -> if isNothing (h4 g) && isNothing (h5 g) && all (== Bronze) (roomb g) then Just (gone{roomb=Bronze:roomb g}, 10 * (8 - length (roomb g))) else Nothing
-    Copper -> if isNothing (h5 g) && all (== Copper) (roomc g) then Just (gone{roomc=Copper:roomc g}, 100 * (6 - length (roomc g))) else Nothing
-    Desert -> if all (== Desert) (roomd g) then Just (gone{roomd=Desert:roomd g}, 1000 * (4 - length (roomd g))) else Nothing
+    Amber -> if isNothing (h3 g) && isNothing (h4 g) && isNothing (h5 g) && all (== Amber) (rooma g) then Just (gone{rooma=Amber:rooma g}, 12 - length (rooma g)) else Nothing
+    Bronze -> if isNothing (h4 g) && isNothing (h5 g) && all (== Bronze) (roomb g) then Just (gone{roomb=Bronze:roomb g}, 10 * (10 - length (roomb g))) else Nothing
+    Copper -> if isNothing (h5 g) && all (== Copper) (roomc g) then Just (gone{roomc=Copper:roomc g}, 100 * (8 - length (roomc g))) else Nothing
+    Desert -> if all (== Desert) (roomd g) then Just (gone{roomd=Desert:roomd g}, 1000 * (6 - length (roomd g))) else Nothing
 moveFrom7 _ = Nothing
 
 inMoves :: Game -> [(Game, Int)]
@@ -250,8 +250,8 @@ playGame init = search Set.empty (Heap.singleton (0, init))
             toBeVisited' = foldr Heap.insert rest moves
         in search visited' toBeVisited'
 
-input2 :: Game
-input2 = G
+example2 :: Game
+example2 = G
   { h1 = Just Amber
   , h2 = Nothing
   , h3 = Nothing
@@ -264,10 +264,22 @@ input2 = G
   , roomc = [Copper, Copper]
   , roomd = [Desert, Desert] }
 
-part23a :: IO String
-part23a = do
-  let x = playGame input
-  return $ show x
+input2 :: Game
+input2 = G
+  { h1 = Nothing
+  , h2 = Nothing
+  , h3 = Nothing
+  , h4 = Nothing
+  , h5 = Nothing
+  , h6 = Nothing
+  , h7 = Nothing
+  , rooma = [Desert, Desert, Desert, Copper]
+  , roomb = [Bronze, Copper, Bronze, Copper]
+  , roomc = [Bronze, Bronze, Amber, Desert]
+  , roomd = [Amber, Amber, Copper, Amber] }
 
-part23b :: IO String
-part23b = pure "Hello"
+part23a :: IO Int
+part23a = pure $ playGame input
+
+part23b :: IO Int
+part23b = pure $ playGame input2
